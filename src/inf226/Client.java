@@ -24,7 +24,7 @@ public class Client {
 
 	public static void main(String[] args) {
 		final String hostname = (args.length<1)?"localhost":args[0];
-		System.out.println("Welcome to assignment 1. yolo");
+		System.out.println("Welcome to assignment 1. yolo in your faces");
 		System.out.println("This is the client program which will allow you to register users,");
 		System.out.println("request and validate session IDs.");
 		System.out.println();
