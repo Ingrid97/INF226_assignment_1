@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ca01d7bd-d7ec-4594-8439-9f313ae77190" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/inf226/Client.java" afterPath="$PROJECT_DIR$/src/inf226/Client.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NOTES.txt" afterPath="$PROJECT_DIR$/NOTES.txt" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,7 +14,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Client.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Client.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/inf226/Client.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="221">
@@ -25,6 +25,16 @@
                 <element signature="e#7340#7348#0" expanded="true" />
                 <element signature="e#7673#7689#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NOTES.txt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/NOTES.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="77" lean-forward="false" selection-start-line="0" selection-start-column="77" selection-end-line="0" selection-end-column="77" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -43,6 +53,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/inf226/Client.java" />
+        <option value="$PROJECT_DIR$/NOTES.txt" />
       </list>
     </option>
   </component>
@@ -223,12 +234,12 @@
       <option name="presentableId" value="Default" />
       <updated>1536759541132</updated>
       <workItem from="1536759542846" duration="41000" />
-      <workItem from="1536759868013" duration="290000" />
+      <workItem from="1536759868013" duration="517000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="331000" />
+    <option name="totallyTimeSpent" value="558000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="3" y="23" width="1420" height="869" extended-state="0" />
@@ -297,6 +308,14 @@
             <element signature="e#7340#7348#0" expanded="true" />
             <element signature="e#7673#7689#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/NOTES.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="77" lean-forward="false" selection-start-line="0" selection-start-column="77" selection-end-line="0" selection-end-column="77" />
+          <folding />
         </state>
       </provider>
     </entry>
