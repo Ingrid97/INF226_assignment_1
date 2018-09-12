@@ -14,7 +14,7 @@ import java.util.TreeMap;
 /**
  * This class is the client which connect to the server.
  * To run the client, execute it on the console.
- * 
+ *
  * @author INF226
  *
  */
@@ -29,11 +29,10 @@ public class Client {
 		System.out.println("request and validate session IDs.");
 		System.out.println();
 		try (final Socket socket = new Socket(hostname,portNumber);
-			 final BufferedReader serverIn
-			   = new BufferedReader
+			 final BufferedReader serverIn = new BufferedReader
 			   ( new InputStreamReader
 			   ( socket.getInputStream()));
-		 	final BufferedWriter serverOut 
+		 	final BufferedWriter serverOut
 			   = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
 			System.out.println("Connected to server. What do you want to do?");
 			mainMenu(serverIn, serverOut);
@@ -99,11 +98,11 @@ public class Client {
 			System.err.println("Bye-bye!");
 		}
 	}
-	
+
 
 	/**
 	 * This method implement the menu for when the user is logged in.
-	 * 
+	 *
 	 * @param serverOut
 	 * @param serverIn
 	 */
@@ -151,7 +150,7 @@ public class Client {
 
 	/**
 	 * Register the user with the server.
-	 * 
+	 *
 	 * @param serverOut
 	 * @param serverIn
 	 * @param username
@@ -176,7 +175,7 @@ public class Client {
 
 	/**
 	 * Negotiate the login authentication with the server
-	 * 
+	 *
 	 * @param serverOut
 	 * @param serverIn
 	 * @param username
@@ -187,7 +186,7 @@ public class Client {
 	         ( final BufferedWriter serverOut,
 	           final BufferedReader serverIn,
 	           final String username,
-	           final String password ) throws IOException { 
+	           final String password ) throws IOException {
 		serverOut.write("LOGIN"); serverOut.newLine();
 		serverOut.write("USER " + username); serverOut.newLine();
 		serverOut.write("PASS " + password); serverOut.newLine();
@@ -239,7 +238,7 @@ public class Client {
 				messages.put(sender,fresh);
 			}
 		}
-		
+
 		// Display one of the messages to the user
 		if(messages.size() == 0) {
 			System.out.println("No messages!");

@@ -4,10 +4,13 @@ import java.io.*;
 import java.net.*;
 import java.util.function.Function;
 
+import inf226.Storage.Id;
 import inf226.Storage.KeyedStorage;
 import inf226.Storage.Storage.ObjectDeletedException;
 import inf226.Storage.Stored;
 import inf226.Storage.TransientStorage;
+
+import static inf226.Maybe.just;
 
 /**
  * 
@@ -30,8 +33,12 @@ public class Server {
 	}
 
 	public static Maybe<Stored<User>> register(String username, String password) {
-		// TODO: Implement user registration 
-		return Maybe.nothing();
+		// TODO: Implement user registration
+		User u = new User(username);
+		Id.Generator g = new Id.Generator();
+		Stored k = new Stored(g, u);
+		//return Maybe.nothing();
+		return just(k);
 	}
 	
 	public static Maybe<Token> createToken(Stored<User> user) {
@@ -45,13 +52,13 @@ public class Server {
 
 	public static Maybe<String> validateUsername(String username) {
 		// TODO: Validate username before returning
-		return Maybe.just(username);
+		return just(username);
 	}
 
 	public static Maybe<String> validatePassword(String pass) {
 		// TODO: Validate pass before returning
 		// This method only checks that the password contains a safe string.
-		return Maybe.just(pass);
+		return just(pass);
 	}
 
 	public static Maybe<Stored<User>> sendMessage(Stored<User> sender, Message message) {
@@ -66,7 +73,7 @@ public class Server {
 	 */
 	public static Maybe<Stored<User>> refresh(Stored<User> user) {
 		try {
-			return Maybe.just(storage.refresh(user));
+			return just(storage.refresh(user));
 		} catch (ObjectDeletedException e) { 
 		} catch (IOException e) { 
 		}
