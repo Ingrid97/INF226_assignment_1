@@ -126,7 +126,7 @@ public final class RequestProcessor extends Thread {
             if(requestType.equals("LOGIN")) {
                 user = handleLogin(in);
                 try {
-                    out.write(user.force().getValue().getName() + ", you are now logged in. :)");
+                    out.write("You are now logged in, " + user.force().getValue().getName());
                 } catch (NothingException e) {
                     out.write("Login failed. Get a lawyer.");
                 }

@@ -73,7 +73,7 @@ public class Server {
 		// This method only checks that the password contains a safe string.
 
 		System.out.println("Validate Password: " + pass);
-		System.out.println("Maybe: " + Maybe.just(pass));
+		//System.out.println("Maybe: " + Maybe.just(pass));
 		return Maybe.just(pass);
 	}
 
@@ -101,7 +101,7 @@ public class Server {
 	 */
 	public static void main(String[] args) {
 		final RequestProcessor processor = new RequestProcessor();
-		System.out.println("Staring authentication server");
+		System.out.println("Starting authentication server");
 		processor.start();
 		try (final ServerSocket socket = new ServerSocket(portNumber)) {
 			while(!socket.isClosed()) {

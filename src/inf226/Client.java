@@ -197,9 +197,10 @@ public class Client {
 		serverOut.newLine();
 		serverOut.flush();
 		final String response = Util.getLine(serverIn);
-		System.out.println("response: " + response);
+		System.out.println(response);
 
-		if (response.startsWith("LOGGED IN ")) userMenu(serverOut,serverIn);
+		if (response.startsWith("You are now logged in")) userMenu(serverOut,serverIn);
+		else System.out.println("tiss");
 	}
 
 	/**
