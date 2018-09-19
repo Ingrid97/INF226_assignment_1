@@ -168,10 +168,10 @@ public class Client {
 		serverOut.flush();
 
 		final String response = Util.getLine(serverIn);
-		System.out.println(username + ", you are now registered as a new user.");
+		System.out.println(username + ", you are now registered as a new user. Please log in. \n");
 
 		if (response.startsWith("REGISTERED ")) {
-			userMenu(serverOut,serverIn);
+			mainMenu(serverIn,serverOut);
 		}
 	}
 
@@ -200,7 +200,6 @@ public class Client {
 		System.out.println(response);
 
 		if (response.startsWith("You are now logged in")) userMenu(serverOut,serverIn);
-		else System.out.println("tiss");
 	}
 
 	/**
