@@ -76,7 +76,7 @@ public class Client {
 					option=3;
 				if ( line.toLowerCase().equals("help")
 				  || line.equals("?"))
-					System.out.println("Ask you TA.");
+					System.out.println("Ask your TA.");
 			}
 			if(option == 1) { // LOGIN
 				System.out.print("Username: ");
@@ -166,8 +166,10 @@ public class Client {
 		serverOut.write("USER " + username); serverOut.newLine();
 		serverOut.write("PASS " + password); serverOut.newLine();
 		serverOut.flush();
+
 		final String response = Util.getLine(serverIn);
-		System.out.println(response);
+		System.out.println(username + ", you are now registered as a new user.");
+
 		if (response.startsWith("REGISTERED ")) {
 			userMenu(serverOut,serverIn);
 		}
@@ -187,14 +189,17 @@ public class Client {
 	           final BufferedReader serverIn,
 	           final String username,
 	           final String password ) throws IOException {
-		serverOut.write("LOGIN"); serverOut.newLine();
-		serverOut.write("USER " + username); serverOut.newLine();
-		serverOut.write("PASS " + password); serverOut.newLine();
+		serverOut.write("LOGIN");
+		serverOut.newLine();
+		serverOut.write("USER " + username);
+		serverOut.newLine();
+		serverOut.write("PASS " + password);
+		serverOut.newLine();
 		serverOut.flush();
 		final String response = Util.getLine(serverIn);
-		if (response.startsWith("LOGGED IN ")) {
-			userMenu(serverOut,serverIn);
-		}
+		System.out.println("response: " + response);
+
+		if (response.startsWith("LOGGED IN ")) userMenu(serverOut,serverIn);
 	}
 
 	/**

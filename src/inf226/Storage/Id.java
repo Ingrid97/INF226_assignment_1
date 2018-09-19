@@ -49,6 +49,7 @@ public final class Id implements Comparable<Id> {
 		public String toString() {
 			return "Id generator";
 		}
+
 	}
 
 	/**
