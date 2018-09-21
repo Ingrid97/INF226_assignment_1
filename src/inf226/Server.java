@@ -5,7 +5,6 @@ import java.io.*;
 		import java.net.*;
 		import java.util.ArrayList;
 		import java.util.function.Function;
-
 		import inf226.Storage.KeyedStorage;
 		import inf226.Storage.Storage.ObjectDeletedException;
 		import inf226.Storage.Stored;
@@ -27,11 +26,16 @@ public class Server {
 			{public String apply(User u)
 			{return u.getName();}});
 
+	// Brukes ved login
 	public static Maybe<Stored<User>> authenticate(String username, String password) {
 		// TODO: Implement user authentication
 
 		// Check that user is stored?
-		storage.lookup(password);
+		//storage.lookup(password);
+
+		//if(storage.lookup(password)){
+
+//		}
 
 		return storage.lookup(username);
 	}
@@ -65,6 +69,8 @@ public class Server {
 
 	public static Maybe<String> validateUsername(String username) {
 		// TODO: Validate username before returning
+
+
 		return Maybe.just(username);
 	}
 

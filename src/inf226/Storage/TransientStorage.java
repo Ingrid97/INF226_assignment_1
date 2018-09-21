@@ -66,16 +66,16 @@ public class TransientStorage<K,C> implements KeyedStorage<K,C> {
 	public Maybe<Stored<C>> lookup(Id key) {
 		System.out.println("KEY: " + memory.get(key) );
 
-
-		return new Maybe<Stored<C> >(memory.get(key));
+		return new Maybe<>(memory.get(key));
 	}
 
 	@Override
 	public Maybe<Stored<C>> lookup(K key) {
 		Maybe<Id> id = new Maybe<Id>(keytable.get(key));
 		if (id.isNothing())
-			System.err.println("Key not in store " + key.toString());
+			System.err.println("Key not in store " + key);
 		try {
+			System.out.println("LOOKING UP THE KEY FROM THE USER " + id.toString());
 			return lookup(id.force());
 		} catch (NothingException e) {
 			return Maybe.nothing();
@@ -89,5 +89,4 @@ public class TransientStorage<K,C> implements KeyedStorage<K,C> {
 			throw new ObjectDeletedException(old.id());
 		return newValue;
 	}
-
 }

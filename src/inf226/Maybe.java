@@ -99,4 +99,8 @@ public class Maybe<T> {
 	}
 	  
   }
+
+  public T getValue(){
+      return this.value;
+  }
 }

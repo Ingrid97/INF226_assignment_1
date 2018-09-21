@@ -139,6 +139,7 @@ public class Client {
 				}
 				if(option == 2) { // SEND
 					// TODO: Implement message sending
+					sendMessage();
 				}
 				if(option == 3) // QUIT
 					return;
@@ -203,6 +204,25 @@ public class Client {
 	}
 
 	/**
+	 * Method to send a message to another user
+	 */
+	private static Message sendMessage(){
+
+		Message msg = null;
+		String message = " ";
+		User sender = new User("per", "per");
+		String recipient = " ";
+
+		try{
+			msg = new Message(sender, recipient, message);
+		}catch(Message.Invalid c){
+
+		}
+
+		return msg;
+	}
+
+	/**
 	 * Read messages from the server and display one of them to the user.
 	 * @param serverOut
 	 * @param serverIn
@@ -213,10 +233,11 @@ public class Client {
 			BufferedReader serverIn) throws IOException {
 		serverOut.write("READ MESSAGES"); serverOut.newLine();
 		serverOut.flush();
+
 		final String initialResponse = Util.getLine(serverIn);
 		if (initialResponse.equals("FAILED")) {
 			System.err.println("Failed to retrieve messages");
-			return ;
+			return;
 		}
 
 		// Read messages from server, one by one
