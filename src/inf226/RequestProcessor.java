@@ -137,13 +137,9 @@ public final class RequestProcessor extends Thread {
             }
             if(requestType.equals("SEND MESSAGE")) {
                 try {
-                    user = Server.refresh(user.force()); // DENNE VIRKER
-                   // System.out.println("User fra RequestProcessor: " + user.force().getValue().getName());
-
+                    user = Server.refresh(user.force());
                     final Maybe<Message> message = handleMessage(user.force().getValue().getName(),in);
 
-
-                    // HER stopper alt opp
                     if(Server.sendMessage(user.getValue(),message.getValue().recipient, message.getValue().message)) {
                         out.write("MESSAGE SENT");
                     } else {
@@ -189,13 +185,12 @@ public final class RequestProcessor extends Thread {
             final String lineOne = Util.getLine(in);
             final String lineTwo = Util.getLine(in);
 
-            if (lineOne.startsWith("MESSAGE ") && lineTwo.startsWith("RECEIVER ")) {
-                final String receiver = lineOne.substring("MESSAGE ".length(), lineOne.length()); // DENNE VIRKER
-                final String message = lineTwo.substring("RECEVIER ".length(), lineTwo.length()); // DENNE VIRKER
+            if (lineOne.startsWith("RECEIVER ") && lineTwo.startsWith("MESSAGE ")) {
+                final String receiver = lineOne.substring("RECEIVER ".length(), lineOne.length()); // DENNE VIRKER
+                final String message = lineTwo.substring("MESSAGE ".length(), lineTwo.length()); // DENNE VIRKER
 
                 try {
                     user = Server.refresh(user.force());
-
 
                     Message msg = new Message(user.force().getValue(),receiver,message);
                     return Maybe.just(msg);

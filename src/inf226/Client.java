@@ -219,9 +219,9 @@ public class Client {
 
 		serverOut.write("SEND MESSAGE");
 		serverOut.newLine();
-		serverOut.write("MESSAGE " + message);
-		serverOut.newLine();
 		serverOut.write("RECEIVER " + receiver);
+		serverOut.newLine();
+		serverOut.write("MESSAGE " + message);
 		serverOut.newLine();
 		serverOut.flush();
 	}

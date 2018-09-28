@@ -84,18 +84,15 @@ public class Server {
 	}
 
 	public static boolean sendMessage(Stored<User> sender, String recipient, String content) {
-		// TODO: Implement the message sending.
-		System.err.println("FROM THE SERVER. User: " + sender.toString());
-		System.err.println("content: " + content);
-
 		try{
-			System.err.println("trying from the server");
 			Message msg = new Message(sender.getValue(), recipient, content);
+			sender.getValue().addMessage(msg);
 
+			System.out.println("melding lagret: " + sender.getValue().getMessages());
 			return true;
 		}
-		catch(Message.Invalid c){
-
+		catch(Message.Invalid e){
+			e.printStackTrace();
 		}
 
 		return false;
