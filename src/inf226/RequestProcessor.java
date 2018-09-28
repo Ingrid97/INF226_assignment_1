@@ -96,6 +96,7 @@ public final class RequestProcessor extends Thread {
          */
         private void handle(final BufferedReader in, final BufferedWriter out) throws IOException {
             final String requestType = Util.getLine(in);
+            System.out.println(requestType + " er request type");
             System.err.println("Request type: " + requestType);
 
             if(requestType.equals("REQUEST TOKEN")) {
@@ -136,8 +137,13 @@ public final class RequestProcessor extends Thread {
             }
             if(requestType.equals("SEND MESSAGE")) {
                 try {
+                    user = Server.refresh(user.force());
+                    System.out.println("User fra RequestProcessor: " + user.force().getValue().getName());
+
                     final Maybe<Message> message = handleMessage(user.force().getValue().getName(),in);
-                    if(Server.sendMessage(user.force(),message.force())) {
+
+
+                    if(Server.sendMessage(user.getValue(),message.getValue().recipient, message.getValue().message)) {
                         out.write("MESSAGE SENT");
                     } else {
                         out.write("FAILED");
@@ -178,9 +184,37 @@ public final class RequestProcessor extends Thread {
          * @param in Reader to read the message data from.
          * @return Message object.
          */
-        private static Maybe<Message> handleMessage(String username, BufferedReader in) {
-            // TODO: Handle message input
-            return Maybe.nothing();
+        private  Maybe<Message> handleMessage(String username, BufferedReader in) throws IOException{
+            final String lineOne = Util.getLine(in);
+            final String lineTwo = Util.getLine(in);
+
+            System.err.println("this is line one: " + lineOne + " This is line two: " + lineTwo);
+            System.out.println("this is line one: " + lineOne + " This is line two: " + lineTwo);
+
+            if (lineOne.startsWith("MESSAGE ") && lineTwo.startsWith("RECEIVER ")) {
+                final String receiver = lineOne.substring("MESSAGE ".length(), lineOne.length());
+                final String message = lineTwo.substring("RECEVIER ".length(), lineTwo.length());
+
+                try {
+                    user = Server.refresh(user.force());
+                } catch (NothingException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    Maybe<Message> msg = new Message(user, receiver, message));
+                    return msg;
+                }
+                catch (Message.Invalid m) {
+                    return Maybe.nothing();
+                }
+                catch (NothingException n) {
+                    return Maybe.nothing();
+                }
+            }
+            else {
+                return Maybe.nothing();
+            }
         }
 
         /**
@@ -205,7 +239,6 @@ public final class RequestProcessor extends Thread {
             } else {
                 return Maybe.nothing();
             }
-
         }
 
         /**

@@ -12,13 +12,13 @@ public final class User {
 	private final String name;
 	private final String password;
 	private final ImmutableLinkedList<Message> log;
-	private ArrayList<User> users;
+	//private ArrayList<User> users;
 
 
 	public User(final String name, String password) {
 		this.name=name;
 		this.log = new ImmutableLinkedList<Message>();
-		this.users = new ArrayList<>();
+		//this.users = new ArrayList<>();
 		this.password = password;
 	}
 
@@ -32,16 +32,16 @@ public final class User {
 	 *
 	 */
 	public void addUserToList(User u){
-		users.add(u);
+		//users.add(u);
 	}
 
 	/**
 	 *
 	 */
 	public void checkUserList(){
-		for(int i = 0; i < users.size(); i++){
-			System.out.println("userlist: " + users.get(i).getName());
-		}
+		//for(int i = 0; i < users.size(); i++){
+		//	System.out.println("userlist: " + users.get(i).getName());
+		//}
 	}
 	
 	/**

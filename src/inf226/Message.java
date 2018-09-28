@@ -13,7 +13,7 @@ public class Message {
 
 	public static boolean valid(String message) {
 		// TODO: Implement message string validation.
-		return false;
+		return true;
 	}
 
 	public static class Invalid extends Exception {

@@ -1,7 +1,6 @@
 package inf226;
 
 import inf226.Maybe.NothingException;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -23,11 +22,12 @@ public class Client {
 	static final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
 
 	public static void main(String[] args) {
-		final String hostname = (args.length<1)?"localhost":args[0];
+		final String hostname = (args.length<1) ? "localhost" : args[0];
 		System.out.println("Welcome to assignment 1. Dette blir epic lol");
 		System.out.println("This is the client program which will allow you to register users,");
 		System.out.println("request and validate session IDs.");
 		System.out.println();
+
 		try (final Socket socket = new Socket(hostname,portNumber);
 			 final BufferedReader serverIn = new BufferedReader
 			   ( new InputStreamReader
@@ -138,8 +138,11 @@ public class Client {
 					readMessages(serverOut,serverIn);
 				}
 				if(option == 2) { // SEND
-					// TODO: Implement message sending
-					sendMessage();
+					System.out.print("Enter your message: ");
+					final String message = Util.getLine(stdin);
+					System.out.print("Enter the name of the user you want to message: ");
+					final String receiver = Util.getLine(stdin);
+					sendMessage(serverIn, serverOut, message, receiver);
 				}
 				if(option == 3) // QUIT
 					return;
@@ -200,26 +203,26 @@ public class Client {
 		final String response = Util.getLine(serverIn);
 		System.out.println(response);
 
-		if (response.startsWith("You are now logged in")) userMenu(serverOut,serverIn);
+		if (response.startsWith("You are now logged in")){
+			userMenu(serverOut,serverIn);
+		}
 	}
+
 
 	/**
 	 * Method to send a message to another user
 	 */
-	private static Message sendMessage(){
+	private static void sendMessage(BufferedReader serverIn,
+									   BufferedWriter serverOut,
+									   String message,
+									   String receiver) throws IOException {
 
-		Message msg = null;
-		String message = " ";
-		User sender = new User("per", "per");
-		String recipient = " ";
-
-		try{
-			msg = new Message(sender, recipient, message);
-		}catch(Message.Invalid c){
-
-		}
-
-		return msg;
+		serverOut.write("SEND MESSAGE");
+		serverOut.newLine();
+		serverOut.write("MESSAGE " + message);
+		serverOut.newLine();
+		serverOut.write("RECEIVER " + receiver);
+		serverOut.newLine();
 	}
 
 	/**
