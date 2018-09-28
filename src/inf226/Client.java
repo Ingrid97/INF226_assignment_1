@@ -224,8 +224,6 @@ public class Client {
 		serverOut.write("RECEIVER " + receiver);
 		serverOut.newLine();
 		serverOut.flush();
-		final String response = Util.getLine(serverIn);
-		System.out.println(response);
 	}
 
 	/**

@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import inf226.Maybe.NothingException;
 import inf226.Storage.Stored;
+import inf226.Storage.TransientStorage;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,6 +13,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
 
 /**
  * This class handles the requests from clients.
@@ -70,7 +72,6 @@ public final class RequestProcessor extends Thread {
 
         @Override
         public void run() {
-
             try(final BufferedWriter out =
                         new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
                 final BufferedReader in = new BufferedReader(
@@ -97,8 +98,6 @@ public final class RequestProcessor extends Thread {
          */
         private void handle(final BufferedReader in, final BufferedWriter out) throws IOException {
             final String requestType = Util.getLine(in);
-            System.out.println(requestType + " er request type");
-            System.err.println("Request type: " + requestType);
 
             if(requestType.equals("REQUEST TOKEN")) {
                 try {
@@ -139,11 +138,12 @@ public final class RequestProcessor extends Thread {
             if(requestType.equals("SEND MESSAGE")) {
                 try {
                     user = Server.refresh(user.force()); // DENNE VIRKER
-                    System.out.println("User fra RequestProcessor: " + user.force().getValue().getName());
+                   // System.out.println("User fra RequestProcessor: " + user.force().getValue().getName());
 
                     final Maybe<Message> message = handleMessage(user.force().getValue().getName(),in);
 
 
+                    // HER stopper alt opp
                     if(Server.sendMessage(user.getValue(),message.getValue().recipient, message.getValue().message)) {
                         out.write("MESSAGE SENT");
                     } else {
@@ -186,8 +186,8 @@ public final class RequestProcessor extends Thread {
          * @return Message object.
          */
         private  Maybe<Message> handleMessage(String username, BufferedReader in) throws IOException{
-            final String lineOne = Util.getLine(in); // DENNE VIRKER
-            final String lineTwo = Util.getLine(in); // DENNE VIRKER
+            final String lineOne = Util.getLine(in);
+            final String lineTwo = Util.getLine(in);
 
             if (lineOne.startsWith("MESSAGE ") && lineTwo.startsWith("RECEIVER ")) {
                 final String receiver = lineOne.substring("MESSAGE ".length(), lineOne.length()); // DENNE VIRKER
@@ -195,8 +195,17 @@ public final class RequestProcessor extends Thread {
 
                 try {
                     user = Server.refresh(user.force());
-                } catch (NothingException e) {
+
+
+                    Message msg = new Message(user.force().getValue(),receiver,message);
+                    return Maybe.just(msg);
+
+                }
+                catch (NothingException e) {
                     e.printStackTrace();
+                }
+                catch (Message.Invalid i){
+
                 }
 
             }

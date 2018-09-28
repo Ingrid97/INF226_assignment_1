@@ -64,8 +64,6 @@ public class TransientStorage<K,C> implements KeyedStorage<K,C> {
 	}
 
 	public Maybe<Stored<C>> lookup(Id key) {
-		System.out.println("KEY: " + memory.get(key) );
-
 		return new Maybe<>(memory.get(key));
 	}
 
