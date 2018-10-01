@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ca01d7bd-d7ec-4594-8439-9f313ae77190" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/inf226/Client.java" afterPath="$PROJECT_DIR$/src/inf226/Client.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/inf226/RequestProcessor.java" afterPath="$PROJECT_DIR$/src/inf226/RequestProcessor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/inf226/Server.java" afterPath="$PROJECT_DIR$/src/inf226/Server.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,17 +14,17 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Client.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Client.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/inf226/Client.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="353">
-              <caret line="205" column="87" lean-forward="false" selection-start-line="205" selection-start-column="87" selection-end-line="205" selection-end-column="87" />
+            <state relative-caret-position="317">
+              <caret line="121" column="22" lean-forward="false" selection-start-line="121" selection-start-column="22" selection-end-line="121" selection-end-column="22" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RequestProcessor.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="RequestProcessor.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/inf226/RequestProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="183">
@@ -169,9 +167,9 @@
         <option value="$PROJECT_DIR$/src/inf226/Storage/TransientStorage.java" />
         <option value="$PROJECT_DIR$/src/inf226/ImmutableLinkedList.java" />
         <option value="$PROJECT_DIR$/src/inf226/User.java" />
-        <option value="$PROJECT_DIR$/src/inf226/Client.java" />
         <option value="$PROJECT_DIR$/src/inf226/Server.java" />
         <option value="$PROJECT_DIR$/src/inf226/RequestProcessor.java" />
+        <option value="$PROJECT_DIR$/src/inf226/Client.java" />
       </list>
     </option>
   </component>
@@ -412,12 +410,12 @@
       <workItem from="1537354471692" duration="37977000" />
       <workItem from="1537948832444" duration="22000" />
       <workItem from="1537983608113" duration="29000" />
-      <workItem from="1537994774377" duration="20203000" />
+      <workItem from="1537994774377" duration="20550000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="74845000" />
+    <option name="totallyTimeSpent" value="75192000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="3" y="23" width="1420" height="869" extended-state="0" />
@@ -865,14 +863,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/inf226/Client.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="353">
-          <caret line="205" column="87" lean-forward="false" selection-start-line="205" selection-start-column="87" selection-end-line="205" selection-end-column="87" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/inf226/Server.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="329">
@@ -890,6 +880,14 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/inf226/Client.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="317">
+          <caret line="121" column="22" lean-forward="false" selection-start-line="121" selection-start-column="22" selection-end-line="121" selection-end-column="22" />
+          <folding />
         </state>
       </provider>
     </entry>

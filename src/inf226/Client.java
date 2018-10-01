@@ -53,12 +53,13 @@ public class Client {
 		System.out.println("[1] Login");
 		System.out.println("[2] Register");
 		System.out.println("[3] Quit");
+		System.out.println();
 		int option = 0;
 		try {
 			while (option == 0) {
 				System.out.print("Enter option: ");
 				final String line = Util.getLine(stdin);
-				System.out.println(line);
+				//System.out.println(line);
 				if ( line.equals("1")
 				  || line.equals("[1]")
 				  || line.toLowerCase().equals("one")
@@ -108,6 +109,7 @@ public class Client {
 	 */
 	private static void userMenu(BufferedWriter serverOut, BufferedReader serverIn) {
 		while(true) {
+			System.out.println();
 			System.out.println("Chose an action:");
 			System.out.println("[1] Read messages");
 			System.out.println("[2] Send message");
@@ -117,7 +119,7 @@ public class Client {
 				while (option == 0) {
 					System.out.print("Enter option > ");
 					final String line = Util.getLine(stdin);
-					System.out.println(line);
+					//System.out.println(line);
 					if ( line.equals("1")
 					  || line.equals("[1]")
 					  || line.toLowerCase().equals("one")
