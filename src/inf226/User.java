@@ -1,24 +1,19 @@
 package inf226;
 
-import java.util.ArrayList;
-
 /**
  * Immutable class for users.
  * @author INF226
  *
  */
 public final class User {
-	
 	private final String name;
 	private final String password;
 	private final ImmutableLinkedList<Message> log;
-	//private ArrayList<User> users;
 
 
 	public User(final String name, String password) {
 		this.name=name;
 		this.log = new ImmutableLinkedList<Message>();
-		//this.users = new ArrayList<>();
 		this.password = password;
 	}
 
@@ -26,22 +21,6 @@ public final class User {
 		this.name=name;
 		this.password = password;
 		this.log = log;
-	}
-
-	/**
-	 *
-	 */
-	public void addUserToList(User u){
-		//users.add(u);
-	}
-
-	/**
-	 *
-	 */
-	public void checkUserList(){
-		//for(int i = 0; i < users.size(); i++){
-		//	System.out.println("userlist: " + users.get(i).getName());
-		//}
 	}
 	
 	/**
@@ -51,6 +30,12 @@ public final class User {
 	public String getName() {
 		return name;
 	}
+
+	/**
+	 *
+	 * @return password
+	 */
+	public String getPassword(){ return password; }
 	
 	/**
 	 * @return Messages sent to this user.
@@ -60,6 +45,10 @@ public final class User {
 	}
 
 
+	public int getSize(){
+		return log.getSize();
+	}
+
 
 	/**
 	 * Add a message to this user’s log.
@@ -67,6 +56,7 @@ public final class User {
 	 * @return Updated user object.
 	 */
 	public User addMessage(Message m) {
+		System.out.println("message added to list!");
 		return new User(name, password, new ImmutableLinkedList<Message>(m,log));
 	}
 

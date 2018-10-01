@@ -127,9 +127,9 @@ public final class RequestProcessor extends Thread {
             if(requestType.equals("LOGIN")) {
                 user = handleLogin(in);
                 try {
-                    out.write("You are now logged in, " + user.force().getValue().getName());
+                    out.write("You are now logged in, " + user.force().getValue().getName() + " \n");
                 } catch (NothingException e) {
-                    out.write("Login failed. Get a lawyer.");
+                    out.write("Login failed. Get a lawyer.\n");
                 }
                 out.newLine();
                 out.flush();
@@ -142,8 +142,11 @@ public final class RequestProcessor extends Thread {
 
                     if(Server.sendMessage(user.getValue(),message.getValue().recipient, message.getValue().message)) {
                         out.write("MESSAGE SENT");
+                        System.err.println("Message has been sent.");
+                        out.write("test");
                     } else {
                         out.write("FAILED");
+
                     }
                 } catch (NothingException e) {
                     out.write("FAILED");
@@ -192,7 +195,16 @@ public final class RequestProcessor extends Thread {
                 try {
                     user = Server.refresh(user.force());
 
+                    System.out.println("TESTING. Username, sender: " + user.force().getValue().getName());
+                    System.out.println("TESTING. Receiver: " + receiver);
+                    System.out.println("TESTING. Message: " + message);
+
                     Message msg = new Message(user.force().getValue(),receiver,message);
+                    user.force().getValue().addMessage(msg);
+                    System.out.println("Size of message list: " + user.force().getValue().getSize());
+                    System.out.println("Messages sent to the user : " + user.force().getValue().getMessages());
+
+
                     return Maybe.just(msg);
 
                 }

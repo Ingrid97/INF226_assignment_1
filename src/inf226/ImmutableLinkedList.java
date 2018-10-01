@@ -25,6 +25,12 @@ public class ImmutableLinkedList<T> implements Iterable<T> {
 		this.head = Maybe.just(new Pair<T,ImmutableLinkedList<T>>(head,tail));
 		this.size = tail.size + 1;
 	}
+
+	public int getSize(){
+		return size;
+	}
+
+
 	Maybe<T> getHead() {
 		return head.map(Pair.<T,ImmutableLinkedList<T>>firstProjection());
 	}

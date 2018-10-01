@@ -79,16 +79,16 @@ public class Client {
 					System.out.println("Ask your TA.");
 			}
 			if(option == 1) { // LOGIN
-				System.out.print("Username: ");
+				System.out.print("Enter username: ");
 				final String username = Util.getLine(stdin);
-				System.out.print("Password: ");
+				System.out.print("Enter password: ");
 				final String password = Util.getLine(stdin);
 				login(serverOut,serverIn,username,password);
 			}
 			if(option == 2) { // REGISTER
-				System.out.print("Username: ");
+				System.out.print("Enter your username: ");
 				final String username = Util.getLine(stdin);
-				System.out.print("Password: ");
+				System.out.print("Enter your password: ");
 				final String password = Util.getLine(stdin);
 				register(serverOut,serverIn,username,password);
 			}
@@ -207,7 +207,6 @@ public class Client {
 			userMenu(serverOut,serverIn);
 		}
 	}
-
 
 	/**
 	 * Method to send a message to another user

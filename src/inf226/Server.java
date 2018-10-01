@@ -28,15 +28,22 @@ public class Server {
 
 	// Brukes ved login
 	public static Maybe<Stored<User>> authenticate(String username, String password) {
-		// TODO: Implement user authentication
+		Maybe<Stored<User>> u = storage.lookup(username);
 
-		// Check that user is stored?
-		//storage.lookup(password);
+		try{
+			if (!password.equals(u.force().getValue().getPassword())){
+				System.out.println("You entered a wrong password.");
+				return Maybe.nothing();
+			}
 
-		//if(storage.lookup(password)){
-
-//		}
-
+			if (!username.equals(u.force().getValue().getName())){
+				System.out.println("Wrong username.");
+				return Maybe.nothing();
+			}
+		}
+		catch(Maybe.NothingException n){
+			n.getStackTrace();
+		}
 		return storage.lookup(username);
 	}
 
@@ -78,17 +85,20 @@ public class Server {
 		// TODO: Validate pass before returning
 		// This method only checks that the password contains a safe string.
 
-		System.out.println("Validate Password: " + pass);
-		//System.out.println("Maybe: " + Maybe.just(pass));
 		return Maybe.just(pass);
 	}
 
 	public static boolean sendMessage(Stored<User> sender, String recipient, String content) {
 		try{
 			Message msg = new Message(sender.getValue(), recipient, content);
-			sender.getValue().addMessage(msg);
 
-			System.out.println("melding lagret: " + sender.getValue().getMessages());
+			// FIND THE RECIPIENT USER
+
+
+
+
+			//sender.getValue().addMessage(msg);
+
 			return true;
 		}
 		catch(Message.Invalid e){
