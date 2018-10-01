@@ -26,7 +26,7 @@ public class Server {
 			{public String apply(User u)
 			{return u.getName();}});
 
-	// Brukes ved login
+	// Brukes ved login, usikker på om det er riktig
 	public static Maybe<Stored<User>> authenticate(String username, String password) {
 		Maybe<Stored<User>> u = storage.lookup(username);
 
@@ -82,8 +82,14 @@ public class Server {
 	}
 
 	public static Maybe<String> validatePassword(String pass) {
-		// TODO: Validate pass before returning
 		// This method only checks that the password contains a safe string.
+
+		/*
+		if(){
+			// Sjekk at passord ikke inneholder tull og tøys
+			return Maybe.just(pass);
+		}
+		*/
 
 		return Maybe.just(pass);
 	}
@@ -93,10 +99,6 @@ public class Server {
 			Message msg = new Message(sender.getValue(), recipient, content);
 
 			// FIND THE RECIPIENT USER
-
-
-
-
 			//sender.getValue().addMessage(msg);
 
 			return true;

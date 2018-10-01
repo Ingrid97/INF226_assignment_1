@@ -89,7 +89,6 @@ public final class RequestProcessor extends Thread {
             }
         }
 
-
         /**
          * Handle a single request
          * @param in Input from the client.
@@ -129,7 +128,7 @@ public final class RequestProcessor extends Thread {
                 try {
                     out.write("You are now logged in, " + user.force().getValue().getName() + " \n");
                 } catch (NothingException e) {
-                    out.write("Login failed. Get a lawyer.\n");
+                    out.write("Login failed. Try again.\n");
                 }
                 out.newLine();
                 out.flush();
@@ -233,7 +232,7 @@ public final class RequestProcessor extends Thread {
             final String lineTwo = Util.getLine(in);
 
             if (lineOne.startsWith("USER ") && lineTwo.startsWith("PASS ")) {
-                final Maybe<String> username = Maybe.just(lineOne.substring("USER ".length(), lineOne.length()));
+                final Maybe<String> username = Server.validateUsername(lineOne.substring("USER ".length(), lineOne.length()));
                 final Maybe<String> password = Server.validatePassword(lineTwo.substring("PASS ".length(), lineTwo.length()));
 
                 try {
@@ -253,7 +252,6 @@ public final class RequestProcessor extends Thread {
          * @throws IOException If the user hangs up unexpectedly.
          */
         private static Maybe<Stored<User>> handleLogin(final BufferedReader in) throws IOException {
-
             final String lineOne = Util.getLine(in);
             final String lineTwo = Util.getLine(in);
 
@@ -265,7 +263,6 @@ public final class RequestProcessor extends Thread {
                     System.err.println("Login request from user: " + username.force());
                     return Server.authenticate(username.force(), password.force());
                 } catch (NothingException e) {
-                    System.out.println("NOTHING HERE, YO");
                     return Maybe.nothing();
                 }
             } else {

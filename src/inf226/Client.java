@@ -23,9 +23,9 @@ public class Client {
 
 	public static void main(String[] args) {
 		final String hostname = (args.length<1) ? "localhost" : args[0];
-		System.out.println("Welcome to assignment 1. Dette blir epic lol");
-		System.out.println("This is the client program which will allow you to register users,");
-		System.out.println("request and validate session IDs.");
+		//System.out.println("Welcome to assignment 1. Dette blir epic lol");
+		//System.out.println("This is the client program which will allow you to register users,");
+		//System.out.println("request and validate session IDs.");
 		System.out.println();
 
 		try (final Socket socket = new Socket(hostname,portNumber);
@@ -203,9 +203,8 @@ public class Client {
 		final String response = Util.getLine(serverIn);
 		System.out.println(response);
 
-		if (response.startsWith("You are now logged in")){
-			userMenu(serverOut,serverIn);
-		}
+		if (response.startsWith("You are now logged in")) userMenu(serverOut,serverIn);
+		else mainMenu(serverIn, serverOut);
 	}
 
 	/**
