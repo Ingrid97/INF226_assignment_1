@@ -179,8 +179,10 @@ public class Client {
 			System.out.println(username + ", you are now registered as a new user. Please log in. \n");
 		} else if (response.startsWith("User")){
 			System.out.println("The username contains illegal characters");
-		} else{
+		} else if (response.startsWith("Pass")){
 			System.out.println("The password contains illegal characters");
+		} else {
+			System.out.println("something is extreamly wrong!");
 		}
 		mainMenu(serverIn,serverOut);
 	}

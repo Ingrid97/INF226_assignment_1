@@ -46,11 +46,11 @@ public class Server {
 		return storage.lookup(username);
 	}
 
-	public static Maybe<Stored<User>> register(String username, String password) throws IOException {
+	public static Maybe<Stored<User>> register(UserName username, Password password) throws IOException {
 
 		try {
 
-			User u = new User(username,password);
+			User u = new User(username.username,password.password);
 			return Maybe.just(storage.save(u));
 
 		} catch (IOException e) {
@@ -77,7 +77,6 @@ public class Server {
 
 	public static Maybe<String> validatePassword(String pass) {
 		// This method only checks that the password contains a safe string.
-
 
 		// Aorks but not for the right characters.
 		//TODO: add for .,:;()[]{}<>"'#!$%&/+*?=-_|
@@ -106,21 +105,6 @@ public class Server {
 			} else {
 				return false;
 			}
-
-			/*for (int i = 0; i < users.size(); i++) {
-				if (users.get(i).getName() == recipient){
-					User u = users.get(i);
-					User new_user = u.addMessage(message);
-					users.remove(i);
-					users.add(new_user);
-					return true;
-				}
-			}*/
-
-			//Message msg = new Message(sender.getValue(), recipient, content);
-
-			// FIND THE RECIPIENT USER
-			//sender.getValue().addMessage(msg);
 
 		}
 		catch(Exception e){
@@ -164,3 +148,20 @@ public class Server {
 		}
 	}
 }
+
+
+
+			/*for (int i = 0; i < users.size(); i++) {
+				if (users.get(i).getName() == recipient){
+					User u = users.get(i);
+					User new_user = u.addMessage(message);
+					users.remove(i);
+					users.add(new_user);
+					return true;
+				}
+			}*/
+
+//Message msg = new Message(sender.getValue(), recipient, content);
+
+// FIND THE RECIPIENT USER
+//sender.getValue().addMessage(msg);

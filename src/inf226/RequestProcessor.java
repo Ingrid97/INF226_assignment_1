@@ -228,28 +228,38 @@ public final class RequestProcessor extends Thread {
          * @return The stored user as a result of the registration.
          * @throws IOException If the client hangs up unexpectedly.
          */
-        private static Maybe<Stored<User>> handleRegistration(BufferedReader in, BufferedWriter out) throws IOException {
-            final String lineOne = Util.getLine(in);
-            final String lineTwo = Util.getLine(in);
+        private static Maybe<Stored<User>> handleRegistration(BufferedReader in, BufferedWriter out) {
+            try{
+                final String lineOne = Util.getLine(in);
+                final String lineTwo = Util.getLine(in);
 
-            if (lineOne.startsWith("USER ") && lineTwo.startsWith("PASS ")) {
-                final Maybe<String> username = Server.validateUsername(lineOne.substring("USER ".length(), lineOne.length()));
-                final Maybe<String> password = Server.validatePassword(lineTwo.substring("PASS ".length(), lineTwo.length()));
+                if (lineOne.startsWith("USER ") && lineTwo.startsWith("PASS ")) {
+                    final UserName username;
+                    final Password password;
 
-
-
-                try {
-                    if(username.isNothing()) {
+                    try {
+                         username = new UserName(lineOne.substring("USER ".length(), lineOne.length()));
+                    } catch (Exception e){
                         out.write("User");
+                        return Maybe.nothing();
                     }
-                    if(password.isNothing()) {
+                    try {
+                        password = new Password(lineTwo.substring("PASS ".length(), lineOne.length()));
+                    } catch (Exception e){
                         out.write("Pass");
+                        return Maybe.nothing();
                     }
-                    return Server.register(username.force(), password.force());
-                } catch (NothingException e) {
+
+                    //final Maybe<String> username = Server.validateUsername(lineOne.substring("USER ".length(), lineOne.length()));
+                    //final Maybe<String> password = Server.validatePassword(lineTwo.substring("PASS ".length(), lineTwo.length()));
+
+                    out.write("Pass");return Server.register(username, password);
+
+                } else {
                     return Maybe.nothing();
                 }
-            } else {
+            } catch (Exception e){
+                e.printStackTrace();
                 return Maybe.nothing();
             }
         }
