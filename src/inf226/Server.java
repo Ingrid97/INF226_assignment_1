@@ -1,14 +1,13 @@
-
 package inf226;
 
 import java.io.*;
-		import java.net.*;
-		import java.util.ArrayList;
-		import java.util.function.Function;
-		import inf226.Storage.KeyedStorage;
-		import inf226.Storage.Storage.ObjectDeletedException;
-		import inf226.Storage.Stored;
-		import inf226.Storage.TransientStorage;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.function.Function;
+import inf226.Storage.KeyedStorage;
+import inf226.Storage.Storage.ObjectDeletedException;
+import inf226.Storage.Stored;
+import inf226.Storage.TransientStorage;
 
 /**
  *
@@ -48,14 +47,10 @@ public class Server {
 	}
 
 	public static Maybe<Stored<User>> register(String username, String password) throws IOException {
-		if (validateUsername(username).isNothing()) {
-			System.out.println("Nothing");
-			return Maybe.nothing();
-		}
+
 		try {
 
 			User u = new User(username,password);
-
 			return Maybe.just(storage.save(u));
 
 		} catch (IOException e) {
@@ -76,22 +71,22 @@ public class Server {
 
 	public static Maybe<String> validateUsername(String username) {
 		// TODO: Validate username before returning
-
-
-		return Maybe.just(username);
+		if (username.matches("^[a-zA-Z0-9]+"))
+			return Maybe.just(username);
+		return Maybe.nothing();
 	}
 
 	public static Maybe<String> validatePassword(String pass) {
 		// This method only checks that the password contains a safe string.
 
-		/*
-		if(){
-			// Sjekk at passord ikke inneholder tull og tøys
-			return Maybe.just(pass);
-		}
-		*/
 
-		return Maybe.just(pass);
+		// Aorks but not for the right characters.
+		//TODO: add for .,:;()[]{}<>"'#!$%&/+*?=-_|
+
+		if(pass.matches("^[a-zA-Z1-9]+") /*|| pass.matches("")*/)
+			return Maybe.just(pass);
+		return Maybe.nothing();
+
 	}
 
 	public static boolean sendMessage(Stored<User> sender, String recipient, String content) {

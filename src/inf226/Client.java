@@ -174,11 +174,15 @@ public class Client {
 		serverOut.flush();
 
 		final String response = Util.getLine(serverIn);
-		System.out.println(username + ", you are now registered as a new user. Please log in. \n");
 
 		if (response.startsWith("REGISTERED ")) {
-			mainMenu(serverIn,serverOut);
+			System.out.println(username + ", you are now registered as a new user. Please log in. \n");
+		} else if (response.startsWith("User")){
+			System.out.println("The username contains illegal characters");
+		} else{
+			System.out.println("The password contains illegal characters");
 		}
+		mainMenu(serverIn,serverOut);
 	}
 
 	/**

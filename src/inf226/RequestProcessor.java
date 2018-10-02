@@ -111,12 +111,12 @@ public final class RequestProcessor extends Thread {
             }
             if(requestType.equals("REGISTER")) {
                 System.err.println("Handling registration request");
-                user = handleRegistration(in);
+                user = handleRegistration(in, out);
                 try {
                     out.write("REGISTERED " + user.force().getValue().getName());
                     System.err.println("Registration request succeeded.");
                 } catch (NothingException e) {
-                    out.write("FAILED");
+                    //out.write("FAILED");
                     System.err.println("Registration request failed.");
                 }
                 out.newLine();
@@ -227,7 +227,7 @@ public final class RequestProcessor extends Thread {
          * @return The stored user as a result of the registration.
          * @throws IOException If the client hangs up unexpectedly.
          */
-        private static Maybe<Stored<User>> handleRegistration(BufferedReader in) throws IOException {
+        private static Maybe<Stored<User>> handleRegistration(BufferedReader in, BufferedWriter out) throws IOException {
             final String lineOne = Util.getLine(in);
             final String lineTwo = Util.getLine(in);
 
@@ -235,7 +235,15 @@ public final class RequestProcessor extends Thread {
                 final Maybe<String> username = Server.validateUsername(lineOne.substring("USER ".length(), lineOne.length()));
                 final Maybe<String> password = Server.validatePassword(lineTwo.substring("PASS ".length(), lineTwo.length()));
 
+
+
                 try {
+                    if(username.isNothing()) {
+                        out.write("User");
+                    }
+                    if(username.isNothing()) {
+                        out.write("Pass");
+                    }
                     return Server.register(username.force(), password.force());
                 } catch (NothingException e) {
                     return Maybe.nothing();
