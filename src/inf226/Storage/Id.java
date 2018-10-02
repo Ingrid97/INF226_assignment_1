@@ -20,7 +20,7 @@ public final class Id implements Comparable<Id> {
      * @return True if Ids are the same and from the same generator.
      */
 	public boolean equals(Id rhs) {
-        if (this.generator.equals(rhs.generator)) {
+        if (!this.generator.equals(rhs.generator)) {
         	throw new RuntimeException
         	   ("Identifiers from different serials compared: " 
         	    + this.generator.toString() + " ≠" + rhs.generator.toString() );

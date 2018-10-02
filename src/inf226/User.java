@@ -1,5 +1,7 @@
 package inf226;
 
+import inf226.Storage.Stored;
+
 /**
  * Immutable class for users.
  * @author INF226
@@ -55,9 +57,14 @@ public final class User {
 	 * @param m Message
 	 * @return Updated user object.
 	 */
-	public User addMessage(Message m) {
+	//public User addMessage(Message m) {
+	public User addMessage(Message m){
 		System.out.println("message added to list!");
-		return new User(name, password, new ImmutableLinkedList<Message>(m,log));
+		//log
+
+		//User newU = new User(name, password, new ImmutableLinkedList<Message>(m,log));
+		return new User(name, password, new ImmutableLinkedList<>(m,log));
+
 	}
 
 }

@@ -20,6 +20,7 @@ public class Message {
 		private static final long serialVersionUID = -3451435075806445718L;
 
 		public Invalid(String msg) {
+
 			super("Invalid string: " + msg);
 		}
 	}

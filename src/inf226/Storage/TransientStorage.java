@@ -59,7 +59,6 @@ public class TransientStorage<K,C> implements KeyedStorage<K,C> {
 		if (!stored.equals(old)) {
 			throw new Storage.ObjectModifiedException(stored);
 		}
-		
 		memory.remove(old.id());
 	}
 
@@ -69,7 +68,7 @@ public class TransientStorage<K,C> implements KeyedStorage<K,C> {
 
 	@Override
 	public Maybe<Stored<C>> lookup(K key) {
-		Maybe<Id> id = new Maybe<Id>(keytable.get(key));
+		Maybe<Id> id = new Maybe<>(keytable.get(key));
 		if (id.isNothing())
 			System.err.println("Key not in store " + key);
 		try {

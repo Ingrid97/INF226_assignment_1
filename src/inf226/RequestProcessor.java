@@ -137,12 +137,16 @@ public final class RequestProcessor extends Thread {
             if(requestType.equals("SEND MESSAGE")) {
                 try {
                     user = Server.refresh(user.force());
+
+                    //make the message
                     final Maybe<Message> message = handleMessage(user.force().getValue().getName(),in);
 
-                    if(Server.sendMessage(user.getValue(),message.getValue().recipient, message.getValue().message)) {
+                    //
+                    if(Server.sendMessage(user.getValue(),message.getValue().recipient, message.getValue(), out)) {
                         out.write("MESSAGE SENT");
                         System.err.println("Message has been sent.");
                         out.write("test");
+
                     } else {
                         out.write("FAILED");
 
@@ -199,13 +203,11 @@ public final class RequestProcessor extends Thread {
                     System.out.println("TESTING. Message: " + message);
 
                     Message msg = new Message(user.force().getValue(),receiver,message);
-                    user.force().getValue().addMessage(msg);
-                    System.out.println("Size of message list: " + user.force().getValue().getSize());
-                    System.out.println("Messages sent to the user : " + user.force().getValue().getMessages());
-
+                    System.out.println(msg.recipient);
+                    //Server.sendMessage(user.force(), receiver, msg);
+                    //User u = user.force().getValue().addMessage(msg);
 
                     return Maybe.just(msg);
-
                 }
                 catch (NothingException e) {
                     e.printStackTrace();
@@ -213,7 +215,6 @@ public final class RequestProcessor extends Thread {
                 catch (Message.Invalid i){
 
                 }
-
             }
             else {
                 return Maybe.nothing();
@@ -241,7 +242,7 @@ public final class RequestProcessor extends Thread {
                     if(username.isNothing()) {
                         out.write("User");
                     }
-                    if(username.isNothing()) {
+                    if(password.isNothing()) {
                         out.write("Pass");
                     }
                     return Server.register(username.force(), password.force());

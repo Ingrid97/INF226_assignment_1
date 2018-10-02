@@ -70,7 +70,6 @@ public class Server {
 	}
 
 	public static Maybe<String> validateUsername(String username) {
-		// TODO: Validate username before returning
 		if (username.matches("^[a-zA-Z0-9]+"))
 			return Maybe.just(username);
 		return Maybe.nothing();
@@ -89,16 +88,42 @@ public class Server {
 
 	}
 
-	public static boolean sendMessage(Stored<User> sender, String recipient, String content) {
+	public static boolean sendMessage(Stored<User> sender, String recipient, Message message, BufferedWriter out) {
 		try{
-			Message msg = new Message(sender.getValue(), recipient, content);
+
+			if(!storage.lookup(recipient).isNothing()){
+				System.out.println("hit: " + storage.lookup(recipient).force().getValue().getName());
+				Maybe<Stored<User>> user = storage.lookup(recipient);
+				System.out.println(user.force().getValue().getName());
+				User new_user = user.force().getValue().addMessage(message);
+				System.out.println(new_user.getSize());
+				storage.update(user.force(), new_user);
+				//Maybe<Stored<User>> n_user = <Stored<User>>new_user);
+				//storage.refresh(new_user);
+
+				//storage.update(user.force(), new_user);
+				return true;
+			} else {
+				return false;
+			}
+
+			/*for (int i = 0; i < users.size(); i++) {
+				if (users.get(i).getName() == recipient){
+					User u = users.get(i);
+					User new_user = u.addMessage(message);
+					users.remove(i);
+					users.add(new_user);
+					return true;
+				}
+			}*/
+
+			//Message msg = new Message(sender.getValue(), recipient, content);
 
 			// FIND THE RECIPIENT USER
 			//sender.getValue().addMessage(msg);
 
-			return true;
 		}
-		catch(Message.Invalid e){
+		catch(Exception e){
 			e.printStackTrace();
 		}
 
