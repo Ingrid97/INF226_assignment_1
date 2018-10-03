@@ -5,15 +5,14 @@ public class Password {
 
     public Password(String pass) throws Exception {
 
-        if (validateUsername(pass)) {
+        if (validatePassword(pass)) {
             this.password = pass;
         } else {
             throw new Exception();
         }
-
     }
 
-    private static boolean validateUsername(String pass) {
+    private static boolean validatePassword(String pass) {
         if (pass.matches("^[a-zA-Z0-9]+"))
             return true;
         return false;

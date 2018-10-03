@@ -1,7 +1,5 @@
 package inf226;
 
-import java.io.IOException;
-
 public class UserName {
     String username;
 

@@ -244,7 +244,7 @@ public final class RequestProcessor extends Thread {
                         return Maybe.nothing();
                     }
                     try {
-                        password = new Password(lineTwo.substring("PASS ".length(), lineOne.length()));
+                        password = new Password(lineTwo.substring("PASS ".length(), lineTwo.length()));
                     } catch (Exception e){
                         out.write("Pass");
                         return Maybe.nothing();
@@ -253,7 +253,7 @@ public final class RequestProcessor extends Thread {
                     //final Maybe<String> username = Server.validateUsername(lineOne.substring("USER ".length(), lineOne.length()));
                     //final Maybe<String> password = Server.validatePassword(lineTwo.substring("PASS ".length(), lineTwo.length()));
 
-                    out.write("Pass");return Server.register(username, password);
+                    return Server.register(username, password);
 
                 } else {
                     return Maybe.nothing();

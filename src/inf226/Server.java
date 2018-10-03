@@ -20,10 +20,15 @@ public class Server {
 	private static final int portNumber = 1337;
 	private static ArrayList<User> users = new ArrayList<>();
 	private static final KeyedStorage<String,User> storage
-			= new TransientStorage<String,User>
+			= new DataBaseUserStorage<String,User>
 			(new Function<User,String>()
 			{public String apply(User u)
 			{return u.getName();}});
+	/*private static final KeyedStorage<String,User> storage
+			= new TransientStorage<String,User>
+			(new Function<User,String>()
+			{public String apply(User u)
+			{return u.getName();}});*/
 
 	// Brukes ved login, usikker på om det er riktig
 	public static Maybe<Stored<User>> authenticate(String username, String password) {
@@ -51,6 +56,7 @@ public class Server {
 		try {
 
 			User u = new User(username.username,password.password);
+
 			return Maybe.just(storage.save(u));
 
 		} catch (IOException e) {
@@ -148,20 +154,3 @@ public class Server {
 		}
 	}
 }
-
-
-
-			/*for (int i = 0; i < users.size(); i++) {
-				if (users.get(i).getName() == recipient){
-					User u = users.get(i);
-					User new_user = u.addMessage(message);
-					users.remove(i);
-					users.add(new_user);
-					return true;
-				}
-			}*/
-
-//Message msg = new Message(sender.getValue(), recipient, content);
-
-// FIND THE RECIPIENT USER
-//sender.getValue().addMessage(msg);
