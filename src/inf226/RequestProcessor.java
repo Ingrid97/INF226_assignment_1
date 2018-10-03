@@ -128,7 +128,7 @@ public final class RequestProcessor extends Thread {
                 try {
                     out.write("You are now logged in, " + user.force().getValue().getName() + " \n");
                 } catch (NothingException e) {
-                    out.write("Login failed. Try again.\n");
+                    out.write("Login failed. Please try again./n");
                 }
                 out.newLine();
                 out.flush();
@@ -138,7 +138,7 @@ public final class RequestProcessor extends Thread {
                 try {
                     user = Server.refresh(user.force());
 
-                    //make the message
+                    // Create the message
                     final Maybe<Message> message = handleMessage(user.force().getValue().getName(),in);
 
                     //

@@ -23,9 +23,6 @@ public class Client {
 
 	public static void main(String[] args) {
 		final String hostname = (args.length<1) ? "localhost" : args[0];
-		//System.out.println("Welcome to assignment 1. Dette blir epic lol");
-		//System.out.println("This is the client program which will allow you to register users,");
-		//System.out.println("request and validate session IDs.");
 		System.out.println();
 
 		try (final Socket socket = new Socket(hostname,portNumber);
@@ -59,7 +56,6 @@ public class Client {
 			while (option == 0) {
 				System.out.print("Enter option: ");
 				final String line = Util.getLine(stdin);
-				//System.out.println(line);
 				if ( line.equals("1")
 				  || line.equals("[1]")
 				  || line.toLowerCase().equals("one")
@@ -119,7 +115,7 @@ public class Client {
 				while (option == 0) {
 					System.out.print("Enter option > ");
 					final String line = Util.getLine(stdin);
-					//System.out.println(line);
+
 					if ( line.equals("1")
 					  || line.equals("[1]")
 					  || line.toLowerCase().equals("one")
@@ -175,15 +171,17 @@ public class Client {
 
 		final String response = Util.getLine(serverIn);
 
-		if (response.startsWith("REGISTERED ")) {
+		if (response.startsWith("REGISTERED "))
 			System.out.println(username + ", you are now registered as a new user. Please log in. \n");
-		} else if (response.startsWith("User")){
+
+		else if (response.startsWith("User"))
 			System.out.println("The username contains illegal characters");
-		} else if (response.startsWith("Pass")){
+
+		else if (response.startsWith("Pass"))
 			System.out.println("The password contains illegal characters");
-		} else {
-			System.out.println("something is extreamly wrong!");
-		}
+
+		else System.out.println("something is very wrong.");
+
 		mainMenu(serverIn,serverOut);
 	}
 

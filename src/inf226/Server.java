@@ -35,13 +35,8 @@ public class Server {
 		Maybe<Stored<User>> u = storage.lookup(username);
 
 		try{
-			if (!password.equals(u.force().getValue().getPassword())){
-				System.out.println("You entered a wrong password.");
-				return Maybe.nothing();
-			}
-
-			if (!username.equals(u.force().getValue().getName())){
-				System.out.println("Wrong username.");
+			// The user does not get to know if the password or username fails. This is open for discussion
+			if (!password.equals(u.force().getValue().getPassword()) || !username.equals(u.force().getValue().getName())){
 				return Maybe.nothing();
 			}
 		}
@@ -54,9 +49,7 @@ public class Server {
 	public static Maybe<Stored<User>> register(UserName username, Password password) throws IOException {
 
 		try {
-
 			User u = new User(username.username,password.password);
-
 			return Maybe.just(storage.save(u));
 
 		} catch (IOException e) {
@@ -71,7 +64,6 @@ public class Server {
 	}
 	public static Maybe<Stored<User>> authenticate(String username, Token token) {
 		// TODO: Implement user authentication
-
 		return Maybe.nothing();
 	}
 
@@ -84,7 +76,7 @@ public class Server {
 	public static Maybe<String> validatePassword(String pass) {
 		// This method only checks that the password contains a safe string.
 
-		// Aorks but not for the right characters.
+		// Works but not for the right characters.
 		//TODO: add for .,:;()[]{}<>"'#!$%&/+*?=-_|
 
 		if(pass.matches("^[a-zA-Z1-9]+") /*|| pass.matches("")*/)
@@ -95,7 +87,6 @@ public class Server {
 
 	public static boolean sendMessage(Stored<User> sender, String recipient, Message message, BufferedWriter out) {
 		try{
-
 			if(!storage.lookup(recipient).isNothing()){
 				System.out.println("hit: " + storage.lookup(recipient).force().getValue().getName());
 				Maybe<Stored<User>> user = storage.lookup(recipient);
@@ -108,15 +99,12 @@ public class Server {
 
 				//storage.update(user.force(), new_user);
 				return true;
-			} else {
-				return false;
 			}
-
+			else return false;
 		}
 		catch(Exception e){
 			e.printStackTrace();
 		}
-
 		return false;
 	}
 
