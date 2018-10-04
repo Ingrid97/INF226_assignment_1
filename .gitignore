@@ -1,0 +1,5 @@
+*.iml
+.idea/*
+*.db
+*sqlite
+out/*
