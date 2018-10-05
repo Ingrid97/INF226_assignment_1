@@ -80,15 +80,9 @@ public class Server {
 	}
 
 	public static Maybe<String> validatePassword(String pass) {
-		// This method only checks that the password contains a safe string.
+		if(pass.matches("[\\w\\d.,:;()\\[\\]{}<>\"'#!$%&/+*?=_|\\-]*")) return Maybe.just(pass);
 
-		// Works but not for the right characters.
-		//TODO: add for .,:;()[]{}<>"'#!$%&/+*?=-_|
-
-		if(pass.matches("^[a-zA-Z1-9]+") /*|| pass.matches("")*/)
-			return Maybe.just(pass);
 		return Maybe.nothing();
-
 	}
 
 	public static boolean sendMessage(Stored<User> sender, String recipient, Message message, BufferedWriter out) {
