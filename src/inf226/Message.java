@@ -6,13 +6,21 @@ public class Message {
 	Message(final User user, final String recipient, final String message) throws Invalid {
 		this.sender = user.getName();
 		this.recipient = recipient;
-		if (!valid(message))
+		if (!valid(message)) {
 			throw new Invalid(message);
+		}
 		this.message = message;
 	}
 
 	public static boolean valid(String message) {
-		// TODO: Implement message string validation.
+
+
+		String[] msg = message.split("\n");
+		for (String m : msg){
+			if (m.equals(".")){
+				return false;
+			}
+		}
 		return true;
 	}
 

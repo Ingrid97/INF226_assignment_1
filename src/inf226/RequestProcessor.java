@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.security.SecureRandom;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -246,7 +247,13 @@ public final class RequestProcessor extends Thread {
                         return Maybe.nothing();
                     }
                     try {
-                        password = new Password(lineTwo.substring("PASS ".length(), lineTwo.length()));
+                        byte[] salt = new byte[64];
+                        SecureRandom s = new SecureRandom();
+                        s.nextBytes(salt);
+                        String fuck = "";
+                        for(byte b : salt)
+                            fuck += b;
+                        password = new Password(lineTwo.substring("PASS ".length(), lineTwo.length()), fuck);
                     } catch (Exception e){
                         out.write("Pass");
                         return Maybe.nothing();

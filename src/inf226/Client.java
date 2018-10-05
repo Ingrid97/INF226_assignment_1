@@ -172,7 +172,7 @@ public class Client {
 		final String response = Util.getLine(serverIn);
 
 		if (response.startsWith("REGISTERED "))
-			System.out.println(username + ", you are now registered as a new user. Please log in. \n");
+			System.out.println(username + ", you are now registered as a new user!");
 
 		else if (response.startsWith("User"))
 			System.out.println("The username contains illegal characters");
@@ -182,7 +182,7 @@ public class Client {
 
 		else System.out.println("something is very wrong.");
 
-		mainMenu(serverIn,serverOut);
+		userMenu(serverOut,serverIn);
 	}
 
 	/**

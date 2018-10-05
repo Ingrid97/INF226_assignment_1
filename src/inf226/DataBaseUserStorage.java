@@ -96,7 +96,9 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
         String sqlusers = "CREATE TABLE IF NOT EXISTS users (\n"
                 + "	Id int,\n"
                 + "	UserName varchar(255),\n"
-                + "	Password varchar(255)\n"
+                + "	Password varchar(" +
+                "255),\n"
+                + " Salt char(64)\n"
                 + ");";
 
         String sqlmessage = "CREATE TABLE IF NOT EXISTS messages (\n"
@@ -125,58 +127,9 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
         }
     }
 
-    public static void addUser(String user, String Password){
-
-        String s = "INSERT INTO users(Id, UserName, Password) \n"
-                + "VALUES ('" + i++ + "', '"+ user + "', '" + Password + "');";
-
-        try (Connection conn = DriverManager.getConnection(url);
-             Statement stmt = conn.createStatement()) {
-            // create a new table
-            stmt.execute(s);
-            System.out.println("user " + user  +" added to the database!");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public static void deleteUser(String user){
-
-        String s = "DELETE FROM users\n"
-                + "WHERE UserName ='" + user + "';";
-
-        try (Connection conn = DriverManager.getConnection(url);
-             Statement stmt = conn.createStatement()) {
-            // create a new table
-            stmt.execute(s);
-            System.out.println("user " + user  +" deleted from the database!");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public static void getUser(String user, String password){
-
-        String sql = "SELECT UserName FROM users WHERE UserName ='" + user + "' AND Password = '" + password + "';";
-
-        try (Connection conn = DriverManager.getConnection(url);
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)){
-
-            if(rs.isClosed()){
-                System.out.println("heihei");
-            }
-            System.out.println(rs.getString("UserName"));
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public Maybe<Stored<User>> lookup(Id key) {
         return new Maybe<>(memory.get(key));
     }
-
 
     @Override
     public Maybe<Stored<User>> lookup(UserName resipient) {
@@ -187,7 +140,7 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
         if (id.isNothing()){
             System.err.println("Key not in store " + resipient);
             String name = resipient.username;
-            String sql = "SELECT UserName, Password  FROM users WHERE UserName ='" + name + "';";
+            String sql = "SELECT UserName, Password, Salt  FROM users WHERE UserName ='" + name + "';";
             //String sqlMessage = "SELECT SenderName, ReciverName, Messaeg FROM messages WHERE ReciverName = '" + name + "'";
 
             //connect and get from database
@@ -198,9 +151,10 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
                 //get username and password
                 String sender = rs.getString("UserName");
                 String password = rs.getString("Password");
+                String salt = rs.getString("Salt");
 
                 //make the user
-                User tempUser = new User(resipient.username, password);
+                User tempUser = new User(resipient.username, password, salt);
 
                 User user = addMessages(tempUser);
                 System.out.println(user.getMessages().iterator().hasNext());
@@ -249,7 +203,7 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
                 String message = rs.getString("Messaeg");
 
                 System.out.println(reciver.getName());
-                User sender = new User(message_sender, "123");
+                User sender = new User(message_sender, "123", "salt");
 
                 System.out.println(message);
                 Message m = new Message(sender, reciver.getName(), message);
@@ -274,11 +228,11 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
     @Override
     public Stored<User> save(User value) throws IOException {
 
-        User u = (User) value;
+        User u = value;
 
         //SQL query
-        String s = "INSERT INTO users (id, UserName, Password)\n"
-                + "VALUES ('" + i++ + "', '"+ u.getName() + "', '" + u.getPassword() + "');";
+        String s = "INSERT INTO users (id, UserName, Password, Salt)\n"
+                + "VALUES ('" + i++ + "', '"+ u.getName() + "', '" + u.getPassword() + "', '" + u.getSalt() + "');";
 
         //connect to database
         try (Connection conn = DriverManager.getConnection(url);
@@ -292,7 +246,6 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
 
             //stuff fra TransistentStorrage
             memory.put(newU.id(),newU);
-            //keytable.put(computeKey.apply(value), newU.id());
             keytable.put(u.getUserName(), newU.id());
 
             return newU;
@@ -359,7 +312,5 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
     }
-
 }

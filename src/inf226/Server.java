@@ -30,7 +30,9 @@ public class Server {
 
 			try {
 				// The user does not get to know if the password or username fails. This is open for discussion
-				if (!password.equals(u.force().getValue().getPassword()) || !username.equals(u.force().getValue().getName())) {
+				Password inn = new Password(password, u.force().getValue().getSalt());
+				Password pass = new Password(u.force().getValue().getPassword());
+				if (!inn.equals(pass) || !username.equals(u.force().getValue().getName())) {
 					return Maybe.nothing();
 				}
 			} catch (Maybe.NothingException n) {
@@ -46,7 +48,7 @@ public class Server {
 	public static Maybe<Stored<User>> register(UserName username, Password password) throws IOException {
 
 		try {
-			User u = new User(username.username,password.password);
+			User u = new User(username.username,password.toString(), password.getSalt());
 			return Maybe.just(storage.save(u));
 
 		} catch (IOException e) {
@@ -66,8 +68,8 @@ public class Server {
 
 	public static Maybe<String> validateUsername(String username) {
 		// This method only checks that the username contains a safe string.
-		if (username.matches("^[a-zA-Z0-9]+"))
-			return Maybe.just(username);
+		if (username.matches("^[a-zA-Z0-9]+")) return Maybe.just(username);
+
 		return Maybe.nothing();
 	}
 
