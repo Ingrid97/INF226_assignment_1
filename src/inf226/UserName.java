@@ -5,18 +5,7 @@ public class UserName implements Comparable{
 
     public UserName(String name) throws Exception {
 
-        if (validateUsername(name)) {
-            this.username = name;
-        } else {
-            throw new Exception();
-        }
-
-    }
-
-    private static boolean validateUsername(String username) {
-        if (username.matches("^[a-zA-Z0-9]+"))
-            return true;
-        return false;
+        this.username = Server.validateUsername(name).force();
     }
 
     @Override

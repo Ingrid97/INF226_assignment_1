@@ -5,16 +5,8 @@ public class Password {
 
     public Password(String pass) throws Exception {
 
-        if (validatePassword(pass)) {
-            this.password = pass;
-        } else {
-            throw new Exception();
-        }
+        this.password = Server.validatePassword(pass).force();
     }
 
-    private static boolean validatePassword(String pass) {
-        if (pass.matches("^[a-zA-Z0-9]+"))
-            return true;
-        return false;
-    }
+    //TODO: sikkerhetsdelen .-.
 }

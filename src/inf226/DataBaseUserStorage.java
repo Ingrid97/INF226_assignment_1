@@ -108,6 +108,7 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
 
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()) {
+
             // create a new table
             stmt.execute(sqlusers);
             stmt.execute(sqlmessage);
@@ -126,8 +127,6 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
 
     public static void addUser(String user, String Password){
 
-        //INSERT INTO Customers (CustomerName, ContactName, Address, City, PostalCode, Country)
-        //VALUES ('Cardinal', 'Tom B. Erichsen', 'Skagen 21', 'Stavanger', '4006', 'Norway');
         String s = "INSERT INTO users(Id, UserName, Password) \n"
                 + "VALUES ('" + i++ + "', '"+ user + "', '" + Password + "');";
 
@@ -143,8 +142,6 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
 
     public static void deleteUser(String user){
 
-        //DELETE FROM Customers
-        //WHERE CustomerName='Alfreds Futterkiste';
         String s = "DELETE FROM users\n"
                 + "WHERE UserName ='" + user + "';";
 
@@ -211,15 +208,6 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
                 //make stored user
                 Id.Generator generator = new Id.Generator();
                 Stored<User> newU = new Stored<User>(generator, user);
-
-                //User u = new User(username, password);
-
-                //memory.put(newU.id(),newU);
-                //keytable.put(computeKey.apply(u), newU.id());
-                //UserName
-                //keytable.put(u.getUserName(), newU.id());
-
-                //System.out.println(user.getName() + ": "+ u.getSize());
 
                 Stored<User> stored = new Stored<>(id_generator, user);
                 memory.put(stored.id(), stored);

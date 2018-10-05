@@ -19,15 +19,6 @@ import inf226.Storage.TransientStorage;
 public class Server {
 	private static final int portNumber = 1337;
 	private static ArrayList<User> users = new ArrayList<>();
-	/*private static final KeyedStorage<String,User> storage = new DataBaseUserStorage(new Function<User,UserName>() {public UserName apply(User u) {
-		try {
-			return new UserName(u.getName());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}});*/
-	//private static final KeyedStorage<String,User> storage = new DataBaseUserStorage();
 	private static final DataBaseUserStorage storage = DataBaseUserStorage.getInstance();
 
 	// Brukes ved login, usikker på om det er riktig
@@ -74,6 +65,7 @@ public class Server {
 	}
 
 	public static Maybe<String> validateUsername(String username) {
+		// This method only checks that the username contains a safe string.
 		if (username.matches("^[a-zA-Z0-9]+"))
 			return Maybe.just(username);
 		return Maybe.nothing();
@@ -81,11 +73,7 @@ public class Server {
 
 	public static Maybe<String> validatePassword(String pass) {
 		// This method only checks that the password contains a safe string.
-
-		// Works but not for the right characters.
-		//TODO: add for .,:;()[]{}<>"'#!$%&/+*?=-_|
-
-		if(pass.matches("^[a-zA-Z1-9]+") /*|| pass.matches("")*/)
+		if(pass.matches("[\\w\\d.,:;()\\[\\]{}<>\"'#!$%&/+*?=\\-_|]*"))
 			return Maybe.just(pass);
 		return Maybe.nothing();
 
@@ -101,10 +89,6 @@ public class Server {
 				User new_user = user.force().getValue().addMessage(message);
 				System.out.println(new_user.getSize());
 				storage.update(user.force(), new_user);
-				//Maybe<Stored<User>> n_user = <Stored<User>>new_user);
-				//storage.refresh(new_user);
-
-				//storage.update(user.force(), new_user);
 				return true;
 			}
 			else return false;
