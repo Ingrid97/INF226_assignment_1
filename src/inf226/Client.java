@@ -1,6 +1,8 @@
 package inf226;
 
 import inf226.Maybe.NothingException;
+
+import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -25,7 +27,12 @@ public class Client {
 		final String hostname = (args.length<1) ? "localhost" : args[0];
 		System.out.println();
 
-		try (final Socket socket = new Socket(hostname,portNumber);
+		System.setProperty("javax.net.ssl.trustStore", "inf226.jks");
+		System.setProperty("javax.net.ssl.trustStorePassword", "test123");
+
+		SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+
+		try (final Socket socket = factory.createSocket(hostname,portNumber);
 			 final BufferedReader serverIn = new BufferedReader
 			   ( new InputStreamReader
 			   ( socket.getInputStream()));

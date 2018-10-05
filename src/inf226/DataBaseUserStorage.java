@@ -94,15 +94,12 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
 
         // SQL statement for creating a new table
         String sqlusers = "CREATE TABLE IF NOT EXISTS users (\n"
-                + "	Id int,\n"
                 + "	UserName varchar(255),\n"
-                + "	Password varchar(" +
-                "255),\n"
+                + "	Password varchar(255),\n"
                 + " Salt char(64)\n"
                 + ");";
 
         String sqlmessage = "CREATE TABLE IF NOT EXISTS messages (\n"
-                + "	Id int,\n"
                 + "	SenderName varchar(255),\n"
                 + "	ReciverName varchar(255),\n"
                 + "	Messaeg varchar(255)\n"
@@ -138,23 +135,27 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
 
         //check if user in storage
         if (id.isNothing()){
+            System.out.println("database");
             System.err.println("Key not in store " + resipient);
-            String name = resipient.username;
-            String sql = "SELECT UserName, Password, Salt  FROM users WHERE UserName ='" + name + "';";
-            //String sqlMessage = "SELECT SenderName, ReciverName, Messaeg FROM messages WHERE ReciverName = '" + name + "'";
+            String sql = "SELECT Password, Salt  FROM users WHERE UserName = ?;";
 
             //connect and get from database
-            try (Connection conn = DriverManager.getConnection(url);
-                 Statement stmt  = conn.createStatement();
-                 ResultSet rs    = stmt.executeQuery(sql)){
+            try {
+                Connection conn = DriverManager.getConnection(url);
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setString(1, resipient.username);
+                ResultSet rs    = stmt.executeQuery();
 
-                //get username and password
-                String sender = rs.getString("UserName");
+                //get password and salt
                 String password = rs.getString("Password");
                 String salt = rs.getString("Salt");
 
                 //make the user
                 User tempUser = new User(resipient.username, password, salt);
+
+                //test Data
+                System.out.println("UserName: " + tempUser.getName());
+
 
                 User user = addMessages(tempUser);
                 System.out.println(user.getMessages().iterator().hasNext());
@@ -175,6 +176,14 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
                 return Maybe.nothing();
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (conn != null) {
+                        conn.close();
+                    }
+                } catch (SQLException ex) {
+                    System.out.println(ex.getMessage());
+                }
             }
         }
 
@@ -188,12 +197,14 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
     }
 
     public User addMessages(User reciver) {
-        String sqlMessage = "SELECT SenderName, Messaeg FROM messages WHERE ReciverName = '" + reciver.getName() + "'";
+        String sqlMessage = "SELECT SenderName, Messaeg FROM messages WHERE ReciverName = ?;";
 
         //connect and get from database
-        try (Connection conn = DriverManager.getConnection(url);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sqlMessage)) {
+        try {
+            Connection conn = DriverManager.getConnection(url);
+            PreparedStatement stmt = conn.prepareStatement(sqlMessage);
+            stmt.setString(1, reciver.getName());
+            ResultSet rs = stmt.executeQuery();
 
             User newUser = reciver;
 
@@ -222,6 +233,14 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
         }
     }
 
@@ -231,15 +250,18 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
         User u = value;
 
         //SQL query
-        String s = "INSERT INTO users (id, UserName, Password, Salt)\n"
-                + "VALUES ('" + i++ + "', '"+ u.getName() + "', '" + u.getPassword() + "', '" + u.getSalt() + "');";
-
+        String sqlInsert = "INSERT INTO users ( UserName, Password, Salt)\n"
+                + "VALUES (?, ?, ?);";
         //connect to database
-        try (Connection conn = DriverManager.getConnection(url);
-             Statement stmt = conn.createStatement()) {
+        try {
+            Connection conn = DriverManager.getConnection(url);
+            PreparedStatement stmt = conn.prepareStatement(sqlInsert);
+            stmt.setString(1, u.getName());
+            stmt.setString(2, u.getPassword());
+            stmt.setString(3, u.getSalt());
 
             // create a new user
-            stmt.execute(s);
+            stmt.execute();
             System.out.println("user " + u.getName()  +" added to the database!");
             Id.Generator generator = new Id.Generator();
             Stored<User> newU = new Stored<>(generator, value);
@@ -251,7 +273,16 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
             return newU;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
         }
+
         return null;
     }
 
@@ -266,23 +297,36 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
     @Override
     public Stored<User> update(Stored<User> old, User newValue) throws ObjectModifiedException, ObjectDeletedException, IOException {
 
-        String sender = newValue.getMessages().iterator().next().sender;
+        String reciver = newValue.getMessages().iterator().next().recipient;
         String message = newValue.getMessages().iterator().next().message;
 
-        String s = "INSERT INTO messages (Id, SenderName, ReciverName, Messaeg)\n"
-                + "VALUES ('" + i++ + "', '"+ sender + "', '" + newValue.getName() + "', '" + message + "');";
+        String sqlInsert = "INSERT INTO messages (SenderName, ReciverName, Messaeg)\n"
+                + "VALUES (?, ?, ?);";
 
-        System.out.println("sender: " + sender);
+        System.out.println("sender: " + newValue.getName() + ": " + newValue.getMessages().iterator().next().recipient);
         System.out.println("reciver: " + newValue.getName());
         System.out.println("message: " + message);
 
-        try (Connection conn = DriverManager.getConnection(url);
-             Statement stmt = conn.createStatement()) {
+        try {
+            Connection conn = DriverManager.getConnection(url);
+            PreparedStatement stmt = conn.prepareStatement(sqlInsert);
+            stmt.setString(1, newValue.getName());
+            stmt.setString(2, reciver);
+            stmt.setString(3, message);
+
             // create a new table
-            stmt.execute(s);
+            stmt.execute();
             System.out.println("massage added to the database!");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
         }
 
         Stored<User> stored = memory.get(old.id());

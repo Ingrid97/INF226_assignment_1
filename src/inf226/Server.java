@@ -9,6 +9,8 @@ import inf226.Storage.Storage.ObjectDeletedException;
 import inf226.Storage.Stored;
 import inf226.Storage.TransientStorage;
 
+import javax.net.ssl.SSLServerSocketFactory;
+
 /**
  *
  * The Server main class. This implements all critical server functions.
@@ -26,7 +28,6 @@ public class Server {
 		try {
 			UserName userN = new UserName(username);
 			Maybe<Stored<User>> u = storage.lookup(userN);
-			System.out.println(u.force().getValue().getSize());
 
 			try {
 				// The user does not get to know if the password or username fails. This is open for discussion
@@ -117,21 +118,34 @@ public class Server {
 	 * @param args TODO: Parse args to get port number
 	 */
 	public static void main(String[] args) {
+		System.setProperty("javax.net.ssl.keyStore", "inf226.jks");
+		System.setProperty("javax.net.ssl.keyStorePassword", "test123");
+
 		final RequestProcessor processor = new RequestProcessor();
 		System.out.println("Starting authentication server");
 		storage.connect();
 		storage.makeTable();
 		processor.start();
-		try (final ServerSocket socket = new ServerSocket(portNumber)) {
-			while(!socket.isClosed()) {
-				System.err.println("Waiting for client to connect…");
-				Socket client = socket.accept();
-				System.err.println("Client connected.");
-				processor.addRequest(new RequestProcessor.Request(client));
-			}
-		} catch (IOException e) {
-			System.out.println("Could not listen on port " + portNumber);
-			e.printStackTrace();
+
+		SSLServerSocketFactory factory = null;
+		try{
+			factory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+		} catch(Exception e){
+			System.out.println("Catched exception " + e);
+		}
+
+		if (factory != null) {
+			try (final ServerSocket socket = factory.createServerSocket(portNumber)) {
+                while(!socket.isClosed()) {
+                    System.err.println("Waiting for client to connect…");
+                    Socket client = socket.accept();
+                    System.err.println("Client connected.");
+                    processor.addRequest(new RequestProcessor.Request(client));
+                }
+            } catch (IOException  e) {
+                System.out.println("Could not listen on port " + portNumber);
+                e.printStackTrace();
+            }
 		}
 	}
 }
