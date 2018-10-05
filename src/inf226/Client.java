@@ -103,7 +103,6 @@ public class Client {
 		}
 	}
 
-
 	/**
 	 * This method implement the menu for when the user is logged in.
 	 *

@@ -23,7 +23,7 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
     private static int i = 1;
     //private final Function<User,UserName> computeKey;
 
-    public DataBaseUserStorage(){
+    private DataBaseUserStorage(){
         //final Function<User,UserName> computeKey
         //this.computeKey = computeKey;
 
@@ -40,32 +40,8 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
     }
 
     /**
-     * @param args the command line arguments
-     * masse tester for å sjekke om databasen fungerer!!!
+     * connects to the database, create if does not exist
      */
-    public static void main(String[] args) {
-
-        //for å sjekke connection til databasen
-        //oppretter databasen om den ikke eksisterer allerede
-        //brukes i main på Server
-        //connect();
-        //makeTable();
-
-
-        /**
-         * tester av database, IKKE til bruk i oppgaven
-         */
-
-        //test for adding
-        //addUser("ijo031","123");
-
-        //test for sletting
-        //deleteUser("ijoo31");
-
-        //test for henting av passord/user(ikke noe ferdig)
-        //getUser("ijo031", "12f3");
-    }
-
 
     public void connect() {
 
@@ -73,7 +49,6 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection(url);
             System.out.println("Connection been established.");
-
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -89,6 +64,10 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
             }
         }
     }
+
+    /**
+     * create the tables in the database
+     */
 
     public void makeTable(){
 
@@ -161,15 +140,13 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
                 System.out.println(user.getMessages().iterator().hasNext());
 
                 //make stored user
-                Id.Generator generator = new Id.Generator();
-                Stored<User> newU = new Stored<User>(generator, user);
 
                 Stored<User> stored = new Stored<>(id_generator, user);
                 memory.put(stored.id(), stored);
                 keytable.put(stored.getValue().getUserName(), stored.id());
 
                 //return the user
-                return Maybe.just(newU);
+                return Maybe.just(stored);
 
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -245,7 +222,7 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
     }
 
     @Override
-    public Stored<User> save(User value) throws IOException {
+    public synchronized Stored<User> save(User value) throws IOException {
 
         User u = value;
 
@@ -263,12 +240,11 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
             // create a new user
             stmt.execute();
             System.out.println("user " + u.getName()  +" added to the database!");
-            Id.Generator generator = new Id.Generator();
-            Stored<User> newU = new Stored<>(generator, value);
+            Stored<User> newU = new Stored<>(id_generator, value);
 
             //stuff fra TransistentStorrage
             memory.put(newU.id(),newU);
-            keytable.put(u.getUserName(), newU.id());
+            keytable.put(newU.getValue().getUserName(), newU.id());
 
             return newU;
         } catch (SQLException e) {
@@ -282,12 +258,11 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
                 System.out.println(ex.getMessage());
             }
         }
-
         return null;
     }
 
     @Override
-    public Stored<User> refresh(Stored<User> old) throws ObjectDeletedException, IOException {
+    public synchronized Stored<User> refresh(Stored<User> old) throws ObjectDeletedException, IOException {
         Stored<User> newValue = memory.get(old.id());
         if(newValue == null)
             throw new ObjectDeletedException(old.id());
@@ -295,22 +270,23 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
     }
 
     @Override
-    public Stored<User> update(Stored<User> old, User newValue) throws ObjectModifiedException, ObjectDeletedException, IOException {
+    public synchronized Stored<User> update(Stored<User> old, User newValue) throws ObjectModifiedException, ObjectDeletedException, IOException {
 
+
+        String sender = newValue.getMessages().iterator().next().sender;
         String reciver = newValue.getMessages().iterator().next().recipient;
         String message = newValue.getMessages().iterator().next().message;
 
-        String sqlInsert = "INSERT INTO messages (SenderName, ReciverName, Messaeg)\n"
-                + "VALUES (?, ?, ?);";
+        String sqlInsert = "INSERT INTO messages (SenderName, ReciverName, Messaeg)\nVALUES (?, ?, ?);";
 
-        System.out.println("sender: " + newValue.getName() + ": " + newValue.getMessages().iterator().next().recipient);
-        System.out.println("reciver: " + newValue.getName());
+        System.out.println("sender: " + sender);
+        System.out.println("reciver: " + newValue.getName() + " : " + reciver);
         System.out.println("message: " + message);
 
         try {
             Connection conn = DriverManager.getConnection(url);
             PreparedStatement stmt = conn.prepareStatement(sqlInsert);
-            stmt.setString(1, newValue.getName());
+            stmt.setString(1, sender);
             stmt.setString(2, reciver);
             stmt.setString(3, message);
 
@@ -337,24 +313,34 @@ public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
         if (!stored.equals(old)) {
             throw new Storage.ObjectModifiedException(stored);
         }
-        Stored<User> newStored = new Stored<User>(old,newValue);
-        memory.put(old.id(), newStored);
+        Stored<User> newStored = new Stored<User>(stored,newValue);
+        memory.put(stored.id(), newStored);
+
         return newStored;
     }
 
     @Override
-    public void delete(Stored<User> old) throws ObjectModifiedException, ObjectDeletedException, IOException {
+    public synchronized void delete(Stored<User> old) throws ObjectModifiedException, ObjectDeletedException, IOException {
 
-        String s = "DELETE FROM users\n"
-                + "WHERE UserName ='" + old.getValue() + "';";
+        String sqlDelete = "DELETE FROM users\nWHERE UserName =?;";
 
-        try (Connection conn = DriverManager.getConnection(url);
-             Statement stmt = conn.createStatement()) {
+        try {
+            Connection conn = DriverManager.getConnection(url);
+            PreparedStatement stmt = conn.prepareStatement(sqlDelete);
+            stmt.setString(1, old.getValue().getName());
             // create a new table
-            stmt.execute(s);
+            stmt.execute();
             System.out.println("user " + old.getValue()  +" deleted from the database!");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
         }
     }
 }

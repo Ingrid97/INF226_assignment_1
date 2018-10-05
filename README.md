@@ -1,5 +1,6 @@
 
 
+
 # Abstract
 
 This is the first of two mandatory assignments in INF226 autumn 2018.

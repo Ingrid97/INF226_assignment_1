@@ -111,6 +111,11 @@ public final class RequestProcessor extends Thread {
                 return;
             }
             if(requestType.equals("REGISTER")) {
+                try{
+                    user = Server.refresh(user.force());
+                } catch (NothingException e) {
+                    e.printStackTrace();
+                }
                 System.err.println("Handling registration request");
                 user = handleRegistration(in, out);
                 try {
@@ -125,6 +130,11 @@ public final class RequestProcessor extends Thread {
                 return;
             }
             if(requestType.equals("LOGIN")) {
+                try{
+                    user = Server.refresh(user.force());
+                } catch (NothingException e) {
+                    e.printStackTrace();
+                }
                 user = handleLogin(in);
                 try {
                     out.write("You are now logged in, " + user.force().getValue().getName() + " \n");
@@ -207,8 +217,6 @@ public final class RequestProcessor extends Thread {
 
                     Message msg = new Message(user.force().getValue(),receiver,message);
                     System.out.println(msg.recipient);
-                    //Server.sendMessage(user.force(), receiver, msg);
-                    //User u = user.force().getValue().addMessage(msg);
 
                     return Maybe.just(msg);
                 }
@@ -258,10 +266,6 @@ public final class RequestProcessor extends Thread {
                         out.write("Pass");
                         return Maybe.nothing();
                     }
-
-                    //final Maybe<String> username = Server.validateUsername(lineOne.substring("USER ".length(), lineOne.length()));
-                    //final Maybe<String> password = Server.validatePassword(lineTwo.substring("PASS ".length(), lineTwo.length()));
-
                     return Server.register(username, password);
 
                 } else {

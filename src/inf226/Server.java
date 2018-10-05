@@ -88,7 +88,6 @@ public class Server {
 				Maybe<Stored<User>> user = storage.lookup(userN);
 				System.out.println(user.force().getValue().getName());
 				User new_user = user.force().getValue().addMessage(message);
-				System.out.println(new_user.getSize());
 				storage.update(user.force(), new_user);
 				return true;
 			}
