@@ -19,31 +19,37 @@ import inf226.Storage.TransientStorage;
 public class Server {
 	private static final int portNumber = 1337;
 	private static ArrayList<User> users = new ArrayList<>();
-	private static final KeyedStorage<String,User> storage
-			= new DataBaseUserStorage<String,User>
-			(new Function<User,String>()
-			{public String apply(User u)
-			{return u.getName();}});
-	/*private static final KeyedStorage<String,User> storage
-			= new TransientStorage<String,User>
-			(new Function<User,String>()
-			{public String apply(User u)
-			{return u.getName();}});*/
+	/*private static final KeyedStorage<String,User> storage = new DataBaseUserStorage(new Function<User,UserName>() {public UserName apply(User u) {
+		try {
+			return new UserName(u.getName());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}});*/
+	//private static final KeyedStorage<String,User> storage = new DataBaseUserStorage();
+	private static final DataBaseUserStorage storage = DataBaseUserStorage.getInstance();
 
 	// Brukes ved login, usikker på om det er riktig
-	public static Maybe<Stored<User>> authenticate(String username, String password) {
-		Maybe<Stored<User>> u = storage.lookup(username);
+	public static Maybe<Stored<User>> authenticate(String username, String password) throws Maybe.NothingException {
+		try {
+			UserName userN = new UserName(username);
+			Maybe<Stored<User>> u = storage.lookup(userN);
+			System.out.println(u.force().getValue().getSize());
 
-		try{
-			// The user does not get to know if the password or username fails. This is open for discussion
-			if (!password.equals(u.force().getValue().getPassword()) || !username.equals(u.force().getValue().getName())){
-				return Maybe.nothing();
+			try {
+				// The user does not get to know if the password or username fails. This is open for discussion
+				if (!password.equals(u.force().getValue().getPassword()) || !username.equals(u.force().getValue().getName())) {
+					return Maybe.nothing();
+				}
+			} catch (Maybe.NothingException n) {
+				n.getStackTrace();
 			}
+			return storage.lookup(userN);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Maybe.nothing();
 		}
-		catch(Maybe.NothingException n){
-			n.getStackTrace();
-		}
-		return storage.lookup(username);
 	}
 
 	public static Maybe<Stored<User>> register(UserName username, Password password) throws IOException {
@@ -87,9 +93,10 @@ public class Server {
 
 	public static boolean sendMessage(Stored<User> sender, String recipient, Message message, BufferedWriter out) {
 		try{
-			if(!storage.lookup(recipient).isNothing()){
-				System.out.println("hit: " + storage.lookup(recipient).force().getValue().getName());
-				Maybe<Stored<User>> user = storage.lookup(recipient);
+			UserName userN = new UserName(recipient);
+			if(!storage.lookup(userN).isNothing()){
+				System.out.println("hit: " + storage.lookup(userN).force().getValue().getName());
+				Maybe<Stored<User>> user = storage.lookup(userN);
 				System.out.println(user.force().getValue().getName());
 				User new_user = user.force().getValue().addMessage(message);
 				System.out.println(new_user.getSize());
@@ -128,6 +135,8 @@ public class Server {
 	public static void main(String[] args) {
 		final RequestProcessor processor = new RequestProcessor();
 		System.out.println("Starting authentication server");
+		storage.connect();
+		storage.makeTable();
 		processor.start();
 		try (final ServerSocket socket = new ServerSocket(portNumber)) {
 			while(!socket.isClosed()) {

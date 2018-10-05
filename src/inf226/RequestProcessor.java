@@ -163,7 +163,9 @@ public final class RequestProcessor extends Thread {
                 try {
                     // Refresh the user object in order to get new messages.
                     user = Server.refresh(user.force());
+                    System.out.println("Read message: " + user.force().getValue().getSize());
                     for (Message m : user.force().getValue().getMessages()) {
+                        System.out.println(m.recipient);
                         System.err.println("Sending message from " + m.sender);
                         out.write("MESSAGE FROM " + m.sender); out.newLine();
                         out.write(m.message);out.newLine();

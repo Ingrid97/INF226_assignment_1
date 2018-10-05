@@ -10,23 +10,33 @@ import java.sql.*;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-public class DataBaseUserStorage<K,C> implements KeyedStorage<K,C> {
+public class DataBaseUserStorage implements KeyedStorage<UserName, User> {
+//public class DataBaseUserStorage<K,C> implements KeyedStorage<K,C>{
 
     private final Id.Generator id_generator;
-    private final TreeMap<Id,Stored<C> > memory;
-    private final TreeMap<K,Id> keytable;
+    private final TreeMap<Id,Stored<User> > memory;
+    private final TreeMap<UserName,Id> keytable;
+    private static DataBaseUserStorage single_instance = null;
 
     private static Connection conn = null;
     private static String url = "jdbc:sqlite:ourDB.db";
     private static int i = 1;
-    private final Function<C,K> computeKey;
+    //private final Function<User,UserName> computeKey;
 
-    public DataBaseUserStorage(final Function<C,K> computeKey){
-        this.computeKey = computeKey;
+    public DataBaseUserStorage(){
+        //final Function<User,UserName> computeKey
+        //this.computeKey = computeKey;
 
         id_generator = new Id.Generator();
-        memory = new TreeMap<Id,Stored<C>>();
-        keytable = new TreeMap<K,Id>();
+        memory = new TreeMap<Id,Stored<User>>();
+        keytable = new TreeMap<UserName,Id>();
+    }
+
+    public static DataBaseUserStorage getInstance() {
+        if (single_instance == null)
+            single_instance = new DataBaseUserStorage();
+
+        return single_instance;
     }
 
     /**
@@ -37,10 +47,10 @@ public class DataBaseUserStorage<K,C> implements KeyedStorage<K,C> {
 
         //for å sjekke connection til databasen
         //oppretter databasen om den ikke eksisterer allerede
+        //brukes i main på Server
         //connect();
-
-        //for å lage table users i databasen
         //makeTable();
+
 
         /**
          * tester av database, IKKE til bruk i oppgaven
@@ -57,7 +67,7 @@ public class DataBaseUserStorage<K,C> implements KeyedStorage<K,C> {
     }
 
 
-    public static void connect() {
+    public void connect() {
 
         try {
             Class.forName("org.sqlite.JDBC");
@@ -80,19 +90,27 @@ public class DataBaseUserStorage<K,C> implements KeyedStorage<K,C> {
         }
     }
 
-    public static void makeTable(){
+    public void makeTable(){
 
         // SQL statement for creating a new table
-        String sql = "CREATE TABLE IF NOT EXISTS users (\n"
+        String sqlusers = "CREATE TABLE IF NOT EXISTS users (\n"
                 + "	Id int,\n"
                 + "	UserName varchar(255),\n"
                 + "	Password varchar(255)\n"
                 + ");";
 
+        String sqlmessage = "CREATE TABLE IF NOT EXISTS messages (\n"
+                + "	Id int,\n"
+                + "	SenderName varchar(255),\n"
+                + "	ReciverName varchar(255),\n"
+                + "	Messaeg varchar(255)\n"
+                + ");";
+
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()) {
             // create a new table
-            stmt.execute(sql);
+            stmt.execute(sqlusers);
+            stmt.execute(sqlmessage);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -110,7 +128,7 @@ public class DataBaseUserStorage<K,C> implements KeyedStorage<K,C> {
 
         //INSERT INTO Customers (CustomerName, ContactName, Address, City, PostalCode, Country)
         //VALUES ('Cardinal', 'Tom B. Erichsen', 'Skagen 21', 'Stavanger', '4006', 'Norway');
-        String s = "INSERT INTO users (id, UserName, Password)\n"
+        String s = "INSERT INTO users(Id, UserName, Password) \n"
                 + "VALUES ('" + i++ + "', '"+ user + "', '" + Password + "');";
 
         try (Connection conn = DriverManager.getConnection(url);
@@ -158,20 +176,22 @@ public class DataBaseUserStorage<K,C> implements KeyedStorage<K,C> {
         }
     }
 
-    public Maybe<Stored<C>> lookup(Id key) {
+    public Maybe<Stored<User>> lookup(Id key) {
         return new Maybe<>(memory.get(key));
     }
 
 
     @Override
-    public Maybe<Stored<C>> lookup(K key) {
-        Maybe<Id> id = new Maybe<>(keytable.get(key));
+    public Maybe<Stored<User>> lookup(UserName resipient) {
+        Maybe<Id> id = new Maybe<>(keytable.get(resipient));
+        System.out.println("lookup id: " + id.getValue());
 
         //check if user in storage
         if (id.isNothing()){
-            System.err.println("Key not in store " + key);
-            String name = (String)key;
+            System.err.println("Key not in store " + resipient);
+            String name = resipient.username;
             String sql = "SELECT UserName, Password  FROM users WHERE UserName ='" + name + "';";
+            //String sqlMessage = "SELECT SenderName, ReciverName, Messaeg FROM messages WHERE ReciverName = '" + name + "'";
 
             //connect and get from database
             try (Connection conn = DriverManager.getConnection(url);
@@ -179,15 +199,31 @@ public class DataBaseUserStorage<K,C> implements KeyedStorage<K,C> {
                  ResultSet rs    = stmt.executeQuery(sql)){
 
                 //get username and password
-                String username = rs.getString("UserName");
+                String sender = rs.getString("UserName");
                 String password = rs.getString("Password");
 
                 //make the user
-                User user = new User(username, password);
+                User tempUser = new User(resipient.username, password);
+
+                User user = addMessages(tempUser);
+                System.out.println(user.getMessages().iterator().hasNext());
 
                 //make stored user
                 Id.Generator generator = new Id.Generator();
-                Stored<C> newU = new Stored<C>(generator, (C)user);
+                Stored<User> newU = new Stored<User>(generator, user);
+
+                //User u = new User(username, password);
+
+                //memory.put(newU.id(),newU);
+                //keytable.put(computeKey.apply(u), newU.id());
+                //UserName
+                //keytable.put(u.getUserName(), newU.id());
+
+                //System.out.println(user.getName() + ": "+ u.getSize());
+
+                Stored<User> stored = new Stored<>(id_generator, user);
+                memory.put(stored.id(), stored);
+                keytable.put(stored.getValue().getUserName(), stored.id());
 
                 //return the user
                 return Maybe.just(newU);
@@ -209,8 +245,46 @@ public class DataBaseUserStorage<K,C> implements KeyedStorage<K,C> {
         }
     }
 
+    public User addMessages(User reciver) {
+        String sqlMessage = "SELECT SenderName, Messaeg FROM messages WHERE ReciverName = '" + reciver.getName() + "'";
+
+        //connect and get from database
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sqlMessage)) {
+
+            User newUser = reciver;
+
+            // loop through the result set
+            while (rs.next()) {
+                String message_sender = rs.getString("SenderName");
+                String message = rs.getString("Messaeg");
+
+                System.out.println(reciver.getName());
+                User sender = new User(message_sender, "123");
+
+                System.out.println(message);
+                Message m = new Message(sender, reciver.getName(), message);
+                newUser = newUser.addMessage(m);
+                System.out.println("message added to the user!");
+            }
+            System.out.println(newUser.getMessages().iterator().hasNext());
+            return newUser;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } catch (Message.Invalid invalid) {
+            invalid.printStackTrace();
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @Override
-    public Stored<C> save(C value) throws IOException {
+    public Stored<User> save(User value) throws IOException {
 
         User u = (User) value;
 
@@ -226,11 +300,12 @@ public class DataBaseUserStorage<K,C> implements KeyedStorage<K,C> {
             stmt.execute(s);
             System.out.println("user " + u.getName()  +" added to the database!");
             Id.Generator generator = new Id.Generator();
-            Stored<C> newU = new Stored<>(generator, value);
+            Stored<User> newU = new Stored<>(generator, value);
 
             //stuff fra TransistentStorrage
             memory.put(newU.id(),newU);
-            keytable.put(computeKey.apply(value), newU.id());
+            //keytable.put(computeKey.apply(value), newU.id());
+            keytable.put(u.getUserName(), newU.id());
 
             return newU;
         } catch (SQLException e) {
@@ -240,19 +315,50 @@ public class DataBaseUserStorage<K,C> implements KeyedStorage<K,C> {
     }
 
     @Override
-    public Stored<C> refresh(Stored<C> old) throws ObjectDeletedException, IOException {
-        return null;
+    public Stored<User> refresh(Stored<User> old) throws ObjectDeletedException, IOException {
+        Stored<User> newValue = memory.get(old.id());
+        if(newValue == null)
+            throw new ObjectDeletedException(old.id());
+        return newValue;
     }
 
     @Override
-    public Stored<C> update(Stored<C> old, C newValue) throws ObjectModifiedException, ObjectDeletedException, IOException {
+    public Stored<User> update(Stored<User> old, User newValue) throws ObjectModifiedException, ObjectDeletedException, IOException {
 
-        //TODO: kan bare bruke delete(old) først og så save(newValue) (tror eg)
-        return null;
+        String sender = newValue.getMessages().iterator().next().sender;
+        String message = newValue.getMessages().iterator().next().message;
+
+        String s = "INSERT INTO messages (Id, SenderName, ReciverName, Messaeg)\n"
+                + "VALUES ('" + i++ + "', '"+ sender + "', '" + newValue.getName() + "', '" + message + "');";
+
+        System.out.println("sender: " + sender);
+        System.out.println("reciver: " + newValue.getName());
+        System.out.println("message: " + message);
+
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement()) {
+            // create a new table
+            stmt.execute(s);
+            System.out.println("massage added to the database!");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        Stored<User> stored = memory.get(old.id());
+        if(stored == null) {
+            throw new Storage.ObjectDeletedException(old.id());
+        }
+
+        if (!stored.equals(old)) {
+            throw new Storage.ObjectModifiedException(stored);
+        }
+        Stored<User> newStored = new Stored<User>(old,newValue);
+        memory.put(old.id(), newStored);
+        return newStored;
     }
 
     @Override
-    public void delete(Stored<C> old) throws ObjectModifiedException, ObjectDeletedException, IOException {
+    public void delete(Stored<User> old) throws ObjectModifiedException, ObjectDeletedException, IOException {
 
         String s = "DELETE FROM users\n"
                 + "WHERE UserName ='" + old.getValue() + "';";

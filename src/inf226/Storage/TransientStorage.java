@@ -37,7 +37,7 @@ public class TransientStorage<K,C> implements KeyedStorage<K,C> {
 
 	public synchronized Stored<C> update(Stored<C> old, C newValue)
 			throws ObjectDeletedException, Storage.ObjectModifiedException {
-		Stored<C> stored = memory.get(old.id());
+		/*Stored<C> stored = memory.get(old.id());
 		if(stored == null) {
 			throw new Storage.ObjectDeletedException(old.id());
 		}
@@ -47,7 +47,8 @@ public class TransientStorage<K,C> implements KeyedStorage<K,C> {
 		}
 		Stored<C> newStored = new Stored<C>(old,newValue);
 		memory.put(old.id(), newStored);
-		return newStored;
+		return newStored;*/
+		return null;
 	}
 
 	public synchronized void delete(Stored<C> old) throws ObjectDeletedException, ObjectModifiedException {

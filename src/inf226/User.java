@@ -24,7 +24,15 @@ public final class User {
 		this.password = password;
 		this.log = log;
 	}
-	
+
+	public UserName getUserName(){
+		try{
+			return new UserName(this.name);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	/**
 	 * 
 	 * @return User name

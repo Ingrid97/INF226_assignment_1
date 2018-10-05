@@ -1,6 +1,6 @@
 package inf226;
 
-public class UserName {
+public class UserName implements Comparable{
     String username;
 
     public UserName(String name) throws Exception {
@@ -19,4 +19,9 @@ public class UserName {
         return false;
     }
 
+    @Override
+    public int compareTo(Object o) {
+        UserName other = (UserName) o;
+        return this.username.compareTo(other.username);
+    }
 }
